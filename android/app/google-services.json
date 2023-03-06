@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "7056682874",
+    "project_id": "word-fight-df368",
+    "storage_bucket": "word-fight-df368.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:7056682874:android:b5df4fb7fca20b2b33b0c3",
+        "android_client_info": {
+          "package_name": "com.example.wordfight"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "7056682874-jugbkmp2sejg8pk29kq101141t96br4r.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.wordfight",
+            "certificate_hash": "a25831ff3ff1631f444ef032ae29d24d57bad19e"
+          }
+        },
+        {
+          "client_id": "7056682874-qfmo7cscfjg9i8gs6bimhujcjs4ai84j.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC6byyXAgJ7TBHDbiLmGlVYhD3R0evEWfw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "7056682874-qfmo7cscfjg9i8gs6bimhujcjs4ai84j.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
