@@ -1,6 +1,6 @@
 # wordfight
 
-A new Flutter project.
+This is multiplayer real time game based only on firebase and flutter. The game check which player know sophisticated words better.
 
 ## Getting Started
 
