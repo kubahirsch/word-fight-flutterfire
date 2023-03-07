@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wordfight/providers/provider.dart';
+import 'package:wordfight/providers/user_provider.dart';
 import 'package:wordfight/resources/firestore_methods.dart';
 
 import 'lobby_searching_screen.dart';

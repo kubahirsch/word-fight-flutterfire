@@ -2,8 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wordfight/providers/provider.dart';
-import 'package:wordfight/screens/screens_with_questions.dart/question2_screen.dart';
+import 'package:wordfight/providers/user_provider.dart';
+import 'package:wordfight/screens_with_questions.dart/question2_screen.dart';
 
 class CurrentScore extends StatefulWidget {
   const CurrentScore({super.key});

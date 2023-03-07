@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wordfight/providers/provider.dart';
+import 'package:wordfight/providers/user_provider.dart';
 import 'package:wordfight/resources/firestore_methods.dart';
 import 'package:wordfight/screens/entry_screen.dart';
 import 'package:wordfight/screens/last_screen.dart';
@@ -18,6 +18,8 @@ class _EndState extends State<End> {
   Widget build(BuildContext context) {
     UserProvider userProvider =
         Provider.of<UserProvider>(context, listen: false);
+
+    // mam problem bo provider userProvider gameStatus zostaje cały czas takie samo
 
     //Changing game status in db depending on the players finished
     if (userProvider.gameSnap!['gameStatus'] == 'start') {

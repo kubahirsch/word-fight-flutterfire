@@ -1,9 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wordfight/providers/provider.dart';
+import 'package:wordfight/providers/user_provider.dart';
 import 'package:wordfight/screens/found_player_screen.dart';
-import 'package:wordfight/screens/screens_with_questions.dart/question1_screen.dart';
+import 'package:wordfight/screens_with_questions.dart/question1_screen.dart';
 
 class LobbySearching extends StatefulWidget {
   const LobbySearching({super.key});
@@ -32,7 +32,7 @@ class _LobbySearchingState extends State<LobbySearching> {
         }
         String gameId = '0';
 
-        // sprawdzanie czy została stworzona gra z moim userId
+        // checking if the game was created with myid
         for (var doc in snapshot.data!.docs) {
           if (doc.data()['userId1'] == userId ||
               doc.data()['userId2'] == userId) {

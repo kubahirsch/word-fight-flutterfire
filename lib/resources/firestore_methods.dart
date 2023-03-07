@@ -19,7 +19,7 @@ class FirestoreMethods {
     int numberOfUsersInLobby = query.count;
 
     if (numberOfUsersInLobby == 2) {
-      var ref = await _firestore.collection('usersInLobby');
+      var ref = _firestore.collection('usersInLobby');
       var usersSnap = await ref.get();
 
       List<String> usersId = [];

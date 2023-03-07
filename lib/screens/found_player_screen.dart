@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:wordfight/screens/screens_with_questions.dart/question1_screen.dart';
+import 'package:wordfight/screens_with_questions.dart/question1_screen.dart';
 
 class FoundPlayer extends StatefulWidget {
   const FoundPlayer({super.key});
