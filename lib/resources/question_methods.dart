@@ -10,16 +10,10 @@ class QuestionMethods {
     return min + Random().nextInt(max - min);
   }
 
-  Future<Map<String, dynamic>> getRandomQuestion() async {
-    AggregateQuerySnapshot query =
-        await _firestore.collection('questions').count().get();
-
-    int numbersOdQuestions = query.count;
-
+  Future<Map<String, dynamic>> getRandomQuestion(int questionId) async {
     QuerySnapshot questionQuery = await _firestore
         .collection('questions')
-        .where('id', isGreaterThanOrEqualTo: random(0, numbersOdQuestions))
-        .orderBy('id')
+        .where('id', isEqualTo: questionId)
         .limit(1)
         .get();
 

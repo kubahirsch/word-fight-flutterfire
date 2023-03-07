@@ -1,10 +1,16 @@
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 
 class FirestoreMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  Future<String> addUserToLobby(String username) async {
+  int random(int min, int max) {
+    return min + Random().nextInt(max - min);
+  }
+
+  Future<String> addUserToLobby(String username, int numberOfRounds) async {
     int millisecondsSinceEpoch = DateTime.now().millisecondsSinceEpoch;
     String userId = millisecondsSinceEpoch.toString();
     await _firestore.collection('usersInLobby').doc(userId).set({
@@ -13,6 +19,7 @@ class FirestoreMethods {
       'inGame': 'not in game yet',
     });
 
+    //counting users in lobby, and if there are 2 deleting them from lobby and adding to a list of users for a game
     AggregateQuerySnapshot query =
         await _firestore.collection('usersInLobby').count().get();
 
@@ -32,13 +39,25 @@ class FirestoreMethods {
         ref.doc(userId).delete();
       }
 
-      createGame(usersId, usersId[0] + usersId[1], usernames);
+      //Creating a list of random ids of questions for the game, depending on how many rounds users wants
+      List<int> questionsIds = [];
+
+      AggregateQuerySnapshot query =
+          await _firestore.collection('questions').count().get();
+
+      int numbersOfQuestions = query.count;
+
+      for (int i = 0; i < numberOfRounds; i += 1) {
+        questionsIds.add(random(0, numbersOfQuestions));
+      }
+
+      createGame(usersId, usersId[0] + usersId[1], usernames, questionsIds);
     }
     return userId;
   }
 
-  Future<void> createGame(
-      List<String> users, String gameId, List<String> usernames) async {
+  Future<void> createGame(List<String> users, String gameId,
+      List<String> usernames, List<int> questionsIds) async {
     await _firestore.collection('games').doc(gameId).set({
       'userId1': users[0],
       'username1': usernames[0],
@@ -48,6 +67,7 @@ class FirestoreMethods {
       'points_${users[1]}': 0,
       'gameId': gameId,
       'gameStatus': 'start',
+      'questionsIds': questionsIds,
     });
   }
 

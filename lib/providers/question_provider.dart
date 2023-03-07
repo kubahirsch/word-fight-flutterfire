@@ -6,9 +6,8 @@ class QuestionProvider extends ChangeNotifier {
 
   Map<String, dynamic> get getQuestionDataAsMap => questionDataAsMap!;
 
-  Future<void> setQuestionDataInProvider() async {
-    questionDataAsMap = await QuestionMethods().getRandomQuestion();
-    print('hujtralala');
+  Future<void> setQuestionDataInProvider(int questionId) async {
+    questionDataAsMap = await QuestionMethods().getRandomQuestion(questionId);
     notifyListeners();
   }
 }

@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wordfight/providers/question_provider.dart';
+import 'package:wordfight/providers/user_provider.dart';
 import 'package:wordfight/screens/current_score_screen.dart';
 import 'package:wordfight/screens_with_questions.dart/question2_screen.dart';
 
@@ -17,9 +18,11 @@ class Question1 extends StatefulWidget {
 class _Question1State extends State<Question1> {
   @override
   Widget build(BuildContext context) {
+    UserProvider userProvider = Provider.of<UserProvider>(context);
+
     return FutureBuilder(
       future: Provider.of<QuestionProvider>(context, listen: false)
-          .setQuestionDataInProvider(),
+          .setQuestionDataInProvider(userProvider.gameSnap!['questionsIds'][0]),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           Map<String, dynamic>? questionData =

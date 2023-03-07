@@ -14,6 +14,7 @@ class EntryScreen extends StatefulWidget {
 
 class _EntryScreenState extends State<EntryScreen> {
   TextEditingController usernameController = TextEditingController();
+  TextEditingController roundController = TextEditingController();
   bool isLoading = false;
 
   @override
@@ -28,13 +29,17 @@ class _EntryScreenState extends State<EntryScreen> {
           controller: usernameController,
           decoration: const InputDecoration(hintText: 'podaj swój nick'),
         ),
+        TextField(
+          controller: roundController,
+          decoration: const InputDecoration(hintText: 'Ile ma być rund'),
+        ),
         InkWell(
           onTap: () async {
             setState(() {
               isLoading = true;
             });
-            String userId = await FirestoreMethods()
-                .addUserToLobby('usernameController.text');
+            String userId = await FirestoreMethods().addUserToLobby(
+                usernameController.text, int.parse(roundController.text));
             Provider.of<UserProvider>(context, listen: false).setUserId(userId);
             Navigator.of(context).pushReplacement(MaterialPageRoute(
               builder: (context) => const LobbySearching(),
