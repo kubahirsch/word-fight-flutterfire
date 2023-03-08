@@ -19,8 +19,6 @@ class _EndState extends State<End> {
     UserProvider userProvider =
         Provider.of<UserProvider>(context, listen: false);
 
-    // mam problem bo provider userProvider gameStatus zostaje cały czas takie samo
-
     //Changing game status in db depending on the players finished
     if (userProvider.gameSnap!['gameStatus'] == 'start') {
       FirestoreMethods()

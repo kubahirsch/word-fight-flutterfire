@@ -2,7 +2,10 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
+import 'package:provider/provider.dart';
 import 'package:wordfight/screens_with_questions.dart/question3_screen.dart';
+
+import '../providers/question_provider.dart';
 
 class Question2 extends StatefulWidget {
   const Question2({super.key});
@@ -24,6 +27,9 @@ class _Question2State extends State<Question2> {
 
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic>? questionData =
+        Provider.of<QuestionProvider>(context).getQuestionDataAsMap;
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
@@ -41,45 +47,61 @@ class _Question2State extends State<Question2> {
             const Text('Co oznacza to słowo ?'),
             Column(
               children: [
-                Row(
-                  children: [
-                    InkWell(
-                      child: Container(
-                        decoration: const BoxDecoration(color: Colors.amber),
-                        width: 50,
-                        height: 50,
-                        child: const Text('1 odpowiedz'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Row(
+                    children: [
+                      InkWell(
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: const BoxDecoration(color: Colors.amber),
+                          width: 120,
+                          height: 50,
+                          child: Text('${questionData['a']}'),
+                        ),
                       ),
-                    ),
-                    InkWell(
-                      child: Container(
-                        decoration: const BoxDecoration(color: Colors.amber),
-                        width: 50,
-                        height: 50,
-                        child: const Text('2 odpowiedz'),
+                      const SizedBox(
+                        width: 20,
                       ),
-                    )
-                  ],
+                      InkWell(
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: const BoxDecoration(color: Colors.amber),
+                          width: 120,
+                          height: 50,
+                          child: Text('${questionData['b']}'),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
-                Row(
-                  children: [
-                    InkWell(
-                      child: Container(
-                        decoration: const BoxDecoration(color: Colors.amber),
-                        width: 50,
-                        height: 50,
-                        child: const Text('3 odpowiedz'),
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8.0),
+                  child: Row(
+                    children: [
+                      InkWell(
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: const BoxDecoration(color: Colors.amber),
+                          width: 120,
+                          height: 50,
+                          child: Text('${questionData['c']}'),
+                        ),
                       ),
-                    ),
-                    InkWell(
-                      child: Container(
-                        decoration: const BoxDecoration(color: Colors.amber),
-                        width: 50,
-                        height: 50,
-                        child: const Text('4 odpowiedz'),
+                      const SizedBox(
+                        width: 20,
                       ),
-                    )
-                  ],
+                      InkWell(
+                        child: Container(
+                          padding: const EdgeInsets.all(10),
+                          decoration: const BoxDecoration(color: Colors.amber),
+                          width: 120,
+                          height: 50,
+                          child: Text('${questionData['d']}'),
+                        ),
+                      )
+                    ],
+                  ),
                 ),
               ],
             ),

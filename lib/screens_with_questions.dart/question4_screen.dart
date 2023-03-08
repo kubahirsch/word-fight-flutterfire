@@ -20,6 +20,12 @@ class _Question4State extends State<Question4> {
   @override
   void initState() {
     Timer(const Duration(seconds: 5), () async {
+      //here I had to update provider because I didn't want userprovider to be listen true on the last page, and I needed latest gameStatus from db
+      UserProvider userProvider =
+          Provider.of<UserProvider>(context, listen: false);
+      await Provider.of<UserProvider>(context, listen: false)
+          .refreshGameDataInProvider(userProvider.getMyGame);
+      // go to page with end of the game
       Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (context) => const End(),
       ));

@@ -19,7 +19,7 @@ class UserProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void refreshGameDataInProvider(String gameId) async {
+  Future<void> refreshGameDataInProvider(String gameId) async {
     gameSnap = await FirestoreMethods().getGameSnapAsMap(gameId);
     List allUserId = [gameSnap!['userId1'], gameSnap!['userId2']];
     allUserId.remove(userId);
