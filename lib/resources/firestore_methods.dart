@@ -71,12 +71,6 @@ class FirestoreMethods {
     });
   }
 
-  Future<void> addingPoints(String userId, String gameId) async {
-    await _firestore.collection('games').doc(gameId).update({
-      'points_$userId': FieldValue.increment(1),
-    });
-  }
-
   Future<Map<String, dynamic>> getGameSnapAsMap(String gameId) async {
     DocumentSnapshot gameSnap =
         await _firestore.collection('games').doc(gameId).get();

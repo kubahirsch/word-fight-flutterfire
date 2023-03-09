@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
 import 'package:wordfight/providers/user_provider.dart';
+import 'package:wordfight/screens_with_questions.dart/question1_screen.dart';
 
+import '../providers/game_provider.dart';
 import '../screens/one_finished_screen.dart';
 
 class Question4 extends StatefulWidget {
@@ -23,12 +25,23 @@ class _Question4State extends State<Question4> {
       //here I had to update provider because I didn't want userprovider to be listen true on the last page, and I needed latest gameStatus from db
       UserProvider userProvider =
           Provider.of<UserProvider>(context, listen: false);
-      await Provider.of<UserProvider>(context, listen: false)
-          .refreshGameDataInProvider(userProvider.getMyGame);
-      // go to page with end of the game
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => const End(),
-      ));
+      await userProvider.refreshGameDataInProvider(userProvider.getMyGame);
+
+      GameProvider gameProvider =
+          Provider.of<GameProvider>(context, listen: false);
+
+      if (gameProvider.getRoundNumber == userProvider.getQuestions.length) {
+        // go to page with end of the game
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => const End(),
+        ));
+      } else {
+        //change round number and go to 1 question screen
+        gameProvider.increaseRoundNumber();
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => const Question1(),
+        ));
+      }
     });
     super.initState();
   }
@@ -57,7 +70,10 @@ class _Question4State extends State<Question4> {
               'W tej rundzie musisz podać jak najwięcej synonimów, jeżeli będą w naszej bazie danych, to za każdy synonim dostajesz 3 pkt'),
           TextField(
             controller: synonimController,
-            decoration: const InputDecoration(hintText: 'Synonim'),
+            decoration: const InputDecoration(
+              hintText: 'Synonim',
+              border: OutlineInputBorder(),
+            ),
           ),
           const SizedBox(height: 60),
           ElevatedButton(

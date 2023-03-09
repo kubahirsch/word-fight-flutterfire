@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wordfight/providers/game_provider.dart';
 import 'package:wordfight/providers/question_provider.dart';
 import 'package:wordfight/providers/user_provider.dart';
 import 'package:wordfight/screens/current_score_screen.dart';
@@ -19,10 +20,12 @@ class _Question1State extends State<Question1> {
   @override
   Widget build(BuildContext context) {
     UserProvider userProvider = Provider.of<UserProvider>(context);
+    GameProvider gameProvider = Provider.of<GameProvider>(context);
 
     return FutureBuilder(
       future: Provider.of<QuestionProvider>(context, listen: false)
-          .setQuestionDataInProvider(userProvider.gameSnap!['questionsIds'][0]),
+          .setQuestionDataInProvider(userProvider.gameSnap!['questionsIds']
+              [(gameProvider.getRoundNumber) - 1]),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           Map<String, dynamic>? questionData =
@@ -58,7 +61,9 @@ class _Question1State extends State<Question1> {
                         width: 10,
                       ),
                       InkWell(
-                        onTap: () {
+                        onTap: () async {
+                          await userProvider.refreshGameDataInProvider(
+                              userProvider.getMyGame);
                           Navigator.of(context)
                               .pushReplacement(MaterialPageRoute(
                             builder: (context) => const End(),

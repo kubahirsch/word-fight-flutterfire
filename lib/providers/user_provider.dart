@@ -9,6 +9,8 @@ class UserProvider extends ChangeNotifier {
   String get getRivalId => rivalId!;
   String? myGame;
   String get getMyGame => myGame!;
+  List<dynamic> questions = [];
+  List<dynamic> get getQuestions => questions;
 
   Map<String, dynamic>? gameSnap;
   Map<String, dynamic>? get getGameSnap => gameSnap;
@@ -25,6 +27,7 @@ class UserProvider extends ChangeNotifier {
     allUserId.remove(userId);
     myGame = gameSnap!['gameId'];
     rivalId = allUserId.join();
+    questions = gameSnap!['questionsIds'];
 
     notifyListeners();
   }

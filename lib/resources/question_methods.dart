@@ -10,7 +10,7 @@ class QuestionMethods {
     return min + Random().nextInt(max - min);
   }
 
-  Future<Map<String, dynamic>> getRandomQuestion(int questionId) async {
+  Future<Map<String, dynamic>> getQuestion(int questionId) async {
     QuerySnapshot questionQuery = await _firestore
         .collection('questions')
         .where('id', isEqualTo: questionId)
@@ -20,5 +20,12 @@ class QuestionMethods {
     DocumentSnapshot questionSnap = questionQuery.docs[0];
 
     return questionSnap.data() as Map<String, dynamic>;
+  }
+
+  Future<void> addingPoints(
+      String userId, String gameId, int numOfPoints) async {
+    await _firestore.collection('games').doc(gameId).update({
+      'points_$userId': FieldValue.increment(1),
+    });
   }
 }
