@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:wordfight/providers/game_provider.dart';
 import 'package:wordfight/providers/question_provider.dart';
@@ -19,8 +20,10 @@ class Question1 extends StatefulWidget {
 class _Question1State extends State<Question1> {
   @override
   Widget build(BuildContext context) {
-    UserProvider userProvider = Provider.of<UserProvider>(context);
-    GameProvider gameProvider = Provider.of<GameProvider>(context);
+    UserProvider userProvider =
+        Provider.of<UserProvider>(context, listen: false);
+    GameProvider gameProvider =
+        Provider.of<GameProvider>(context, listen: false);
 
     return FutureBuilder(
       future: Provider.of<QuestionProvider>(context, listen: false)
@@ -29,7 +32,8 @@ class _Question1State extends State<Question1> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.done) {
           Map<String, dynamic>? questionData =
-              Provider.of<QuestionProvider>(context).getQuestionDataAsMap;
+              Provider.of<QuestionProvider>(context, listen: false)
+                  .getQuestionDataAsMap;
           return Scaffold(
             body: Center(
               child: Column(

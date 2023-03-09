@@ -22,10 +22,10 @@ class QuestionMethods {
     return questionSnap.data() as Map<String, dynamic>;
   }
 
-  Future<void> addingPoints(
+  Future<void> addingPointsToDatabase(
       String userId, String gameId, int numOfPoints) async {
     await _firestore.collection('games').doc(gameId).update({
-      'points_$userId': FieldValue.increment(1),
+      'points_$userId': FieldValue.increment(numOfPoints),
     });
   }
 }

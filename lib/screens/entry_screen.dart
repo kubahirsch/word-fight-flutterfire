@@ -18,6 +18,13 @@ class _EntryScreenState extends State<EntryScreen> {
   bool isLoading = false;
 
   @override
+  void dispose() {
+    usernameController.dispose();
+    roundController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Column(children: [
