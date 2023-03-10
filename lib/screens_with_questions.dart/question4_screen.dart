@@ -7,10 +7,9 @@ import 'package:wordfight/providers/question_provider.dart';
 import 'package:wordfight/providers/user_provider.dart';
 import 'package:wordfight/resources/firestore_methods.dart';
 import 'package:wordfight/resources/question_methods.dart';
-import 'package:wordfight/screens_with_questions.dart/question1_screen.dart';
+import 'package:wordfight/screens/end_of_round_screen.dart';
 
 import '../providers/game_provider.dart';
-import '../screens/one_finished_screen.dart';
 
 class Question4 extends StatefulWidget {
   const Question4({super.key});
@@ -26,25 +25,18 @@ class _Question4State extends State<Question4> {
   @override
   void initState() {
     Timer(const Duration(seconds: 15), () async {
-      //here I had to update provider because I didn't want userprovider to be listen true on the last page, and I needed latest gameStatus from db
-      UserProvider userProvider =
-          Provider.of<UserProvider>(context, listen: false);
-      await userProvider.refreshGameDataInProvider(userProvider.getMyGame);
+      if (mounted) {
+        UserProvider userProvider =
+            Provider.of<UserProvider>(context, listen: false);
 
-      GameProvider gameProvider =
-          Provider.of<GameProvider>(context, listen: false);
+        await userProvider.refreshGameDataInProvider(userProvider.getMyGame);
 
-      if (gameProvider.getRoundNumber == userProvider.getQuestions.length) {
-        // go to page with end of the game
+        await FirestoreMethods()
+            .incrementUserRound(userProvider.getMyGame, userProvider.getUserId);
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => const End(),
+          builder: (context) => const EndOfRound(),
         ));
-      } else {
-        //change round number and go to 1 question screen
-        gameProvider.increaseRoundNumber();
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => const Question1(),
-        ));
+        // }
       }
     });
     super.initState();

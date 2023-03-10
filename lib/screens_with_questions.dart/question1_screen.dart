@@ -1,14 +1,11 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:provider/provider.dart';
 import 'package:wordfight/providers/game_provider.dart';
 import 'package:wordfight/providers/question_provider.dart';
 import 'package:wordfight/providers/user_provider.dart';
-import 'package:wordfight/screens/current_score_screen.dart';
+import 'package:wordfight/resources/firestore_methods.dart';
+import 'package:wordfight/screens/end_of_round_screen.dart';
 import 'package:wordfight/screens_with_questions.dart/question2_screen.dart';
-
-import '../screens/one_finished_screen.dart';
 
 class Question1 extends StatefulWidget {
   const Question1({super.key});
@@ -68,9 +65,11 @@ class _Question1State extends State<Question1> {
                         onTap: () async {
                           await userProvider.refreshGameDataInProvider(
                               userProvider.getMyGame);
+                          await FirestoreMethods().incrementUserRound(
+                              userProvider.getMyGame, userProvider.getUserId);
                           Navigator.of(context)
                               .pushReplacement(MaterialPageRoute(
-                            builder: (context) => const End(),
+                            builder: (context) => const EndOfRound(),
                           ));
                         },
                         child: Container(

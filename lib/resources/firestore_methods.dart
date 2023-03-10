@@ -68,8 +68,8 @@ class FirestoreMethods {
       'gameId': gameId,
       'gameStatus': 'start',
       'questionsIds': questionsIds,
-      'status_${users[0]}': 0,
-      'status_${users[1]}': 0,
+      'round_${users[0]}': 0,
+      'round_${users[1]}': 0,
     });
   }
 
@@ -88,5 +88,12 @@ class FirestoreMethods {
 
   Future<void> deleteGame(String gameId) async {
     await _firestore.collection('games').doc(gameId).delete();
+  }
+
+  Future<void> incrementUserRound(String gameId, String userId) async {
+    await _firestore
+        .collection('games')
+        .doc(gameId)
+        .update({'round_$userId': FieldValue.increment(1)});
   }
 }
