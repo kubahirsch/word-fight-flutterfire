@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wordfight/providers/user_provider.dart';
 import 'package:wordfight/resources/firestore_methods.dart';
-import 'package:wordfight/screens/entry_screen.dart';
+import 'package:wordfight/screens/random_player_screen.dart';
 import 'package:wordfight/screens/last_screen.dart';
 
 class End extends StatefulWidget {

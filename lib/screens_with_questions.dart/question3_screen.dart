@@ -32,7 +32,7 @@ class _Question3State extends State<Question3> {
   }
 
   void onSentenceTap(String userId, String gameId, int sentenceNum,
-      int correctSentence, BuildContext context) async {
+      int correctSentence) async {
     if (sentenceNum == correctSentence) {
       await QuestionMethods().addingPointsToDatabase(userId, gameId, 2);
 
@@ -49,7 +49,8 @@ class _Question3State extends State<Question3> {
 
     if (visability[0] != 'dontShow' &&
         visability[1] != 'dontShow' &&
-        visability[2] != 'dontShow') {
+        visability[2] != 'dontShow' &&
+        mounted) {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (context) => const Question4(),
       ));
@@ -110,7 +111,7 @@ class _Question3State extends State<Question3> {
 
 class SentenceRow extends StatefulWidget {
   final String sentence;
-  final Function(String, String, int, int, BuildContext) onSentenceTap;
+  final Function(String, String, int, int) onSentenceTap;
   final int sentenceNum;
 
   const SentenceRow(
@@ -136,10 +137,10 @@ class SentenceRowState extends State<SentenceRow> {
 
     return Row(
       children: [
-        Text(widget.sentence),
+        Flexible(child: Text(widget.sentence)),
         InkWell(
           onTap: () => widget.onSentenceTap(
-              userId, gameId, widget.sentenceNum, correctSentence, context),
+              userId, gameId, widget.sentenceNum, correctSentence),
           child: const SizedBox(
             width: 50,
             height: 20,

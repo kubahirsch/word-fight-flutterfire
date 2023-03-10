@@ -3,7 +3,10 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
+import 'package:wordfight/providers/question_provider.dart';
 import 'package:wordfight/providers/user_provider.dart';
+import 'package:wordfight/resources/firestore_methods.dart';
+import 'package:wordfight/resources/question_methods.dart';
 import 'package:wordfight/screens_with_questions.dart/question1_screen.dart';
 
 import '../providers/game_provider.dart';
@@ -17,11 +20,12 @@ class Question4 extends StatefulWidget {
 }
 
 class _Question4State extends State<Question4> {
-  final synonimController = TextEditingController();
+  final synonymController = TextEditingController();
+  List<String> addedSynonyms = [];
 
   @override
   void initState() {
-    Timer(const Duration(seconds: 5), () async {
+    Timer(const Duration(seconds: 15), () async {
       //here I had to update provider because I didn't want userprovider to be listen true on the last page, and I needed latest gameStatus from db
       UserProvider userProvider =
           Provider.of<UserProvider>(context, listen: false);
@@ -46,14 +50,64 @@ class _Question4State extends State<Question4> {
     super.initState();
   }
 
+  void checkSynonym(
+      List<dynamic> synonyms, String inputSynonym, BuildContext context) {
+    String userId = Provider.of<UserProvider>(context, listen: false).getUserId;
+    String gameId = Provider.of<UserProvider>(context, listen: false).getMyGame;
+
+    if (synonyms.contains(inputSynonym) &&
+        !(addedSynonyms.contains(inputSynonym))) {
+      QuestionMethods().addingPointsToDatabase(userId, gameId, 5);
+      setState(() {
+        addedSynonyms.add(inputSynonym);
+      });
+      showDialog(
+        context: context,
+        builder: (context) {
+          Future.delayed(const Duration(seconds: 1), () {
+            if (mounted) {
+              Navigator.of(context).pop(true);
+            }
+          });
+          return const AlertDialog(
+            shape: CircleBorder(),
+            title: Text('+5'),
+            backgroundColor: Color.fromARGB(255, 47, 189, 52),
+          );
+        },
+      );
+    } else {
+      showDialog(
+        barrierDismissible: false,
+        context: context,
+        builder: (context) {
+          if (mounted) {
+            Future.delayed(const Duration(seconds: 1), () {
+              Navigator.of(context).pop(true);
+            });
+          }
+          return const AlertDialog(
+            shape: CircleBorder(),
+            title: Text('X'),
+            backgroundColor: Colors.red,
+          );
+        },
+      );
+    }
+  }
+
   @override
   void dispose() {
-    synonimController.dispose();
+    synonymController.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    Map<String, dynamic> questionData =
+        Provider.of<QuestionProvider>(context, listen: false)
+            .getQuestionDataAsMap;
+
     return Scaffold(
       body: Column(
         children: [
@@ -61,7 +115,7 @@ class _Question4State extends State<Question4> {
           LinearPercentIndicator(
             percent: 1,
             animation: true,
-            animationDuration: 5000,
+            animationDuration: 15000,
             lineHeight: 20,
             backgroundColor: Colors.grey,
             progressColor: Colors.amber,
@@ -69,7 +123,7 @@ class _Question4State extends State<Question4> {
           const Text(
               'W tej rundzie musisz podać jak najwięcej synonimów, jeżeli będą w naszej bazie danych, to za każdy synonim dostajesz 3 pkt'),
           TextField(
-            controller: synonimController,
+            controller: synonymController,
             decoration: const InputDecoration(
               hintText: 'Synonim',
               border: OutlineInputBorder(),
@@ -81,7 +135,9 @@ class _Question4State extends State<Question4> {
                 padding:
                     const EdgeInsets.symmetric(vertical: 32, horizontal: 20)),
             onPressed: () {
-              synonimController.clear();
+              checkSynonym(questionData['synonyms'],
+                  synonymController.text.toLowerCase(), context);
+              synonymController.clear();
             },
             child: const Text('Sprawdź !'),
           ),

@@ -4,7 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:wordfight/providers/game_provider.dart';
 import 'package:wordfight/providers/question_provider.dart';
 import 'package:wordfight/providers/user_provider.dart';
-import 'package:wordfight/screens/entry_screen.dart';
+import 'package:wordfight/screens/choose_mode_screen.dart';
+import 'package:wordfight/screens/random_player_screen.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -36,7 +37,7 @@ class MyApp extends StatelessWidget {
           theme: ThemeData(
             primarySwatch: Colors.blue,
           ),
-          home: const EntryScreen()),
+          home: const ChooseMode()),
     );
   }
 }

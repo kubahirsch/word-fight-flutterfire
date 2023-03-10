@@ -68,6 +68,8 @@ class FirestoreMethods {
       'gameId': gameId,
       'gameStatus': 'start',
       'questionsIds': questionsIds,
+      'status_${users[0]}': 0,
+      'status_${users[1]}': 0,
     });
   }
 
