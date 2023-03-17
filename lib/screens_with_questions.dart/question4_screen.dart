@@ -113,7 +113,7 @@ class _Question4State extends State<Question4> {
             const CustomPercentIndicator(animationDuration: 15000),
             const SizedBox(height: 40),
             Text(
-              'W tej rundzie musisz podać jak najwięcej synonimów do słowa ${questionData['word']}',
+              'W tej rundzie musisz podać jak najwięcej synonimów do słowa: ${questionData['word'].toUpperCase()}',
               style: const TextStyle(fontSize: 20),
               textAlign: TextAlign.center,
             ),
