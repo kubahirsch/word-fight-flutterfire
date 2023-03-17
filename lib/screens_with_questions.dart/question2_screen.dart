@@ -7,6 +7,8 @@ import 'package:provider/provider.dart';
 import 'package:wordfight/providers/user_provider.dart';
 import 'package:wordfight/resources/question_methods.dart';
 import 'package:wordfight/screens_with_questions.dart/question3_screen.dart';
+import 'package:wordfight/utils/colors.dart';
+import 'package:wordfight/widgets/custom_percent_indicator.dart';
 
 import '../providers/question_provider.dart';
 
@@ -20,7 +22,7 @@ class Question2 extends StatefulWidget {
 class _Question2State extends State<Question2> {
   @override
   void initState() {
-    Timer(const Duration(seconds: 5), () {
+    Timer(const Duration(seconds: 10), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => const Question3(),
@@ -37,20 +39,22 @@ class _Question2State extends State<Question2> {
             .getQuestionDataAsMap;
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text('Drugie pytanie'),
+        centerTitle: true,
+      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Column(
           children: [
             const SizedBox(height: 100),
-            LinearPercentIndicator(
-              percent: 1,
-              animation: true,
-              animationDuration: 5000,
-              lineHeight: 20,
-              backgroundColor: Colors.grey,
-              progressColor: Colors.amber,
+            const CustomPercentIndicator(animationDuration: 10000),
+            const SizedBox(height: 30),
+            Text(
+              'Co oznacza to słowo ${questionData["word"]}? ',
+              style: const TextStyle(fontSize: 20),
             ),
-            const Text('Co oznacza to słowo ?'),
+            const SizedBox(height: 30),
             Column(
               children: [
                 Padding(
@@ -59,6 +63,9 @@ class _Question2State extends State<Question2> {
                     children: [
                       AnswerContainer(
                           answerText: questionData['a'], myAnswer: 'a'),
+                      const SizedBox(
+                        width: 20,
+                      ),
                       AnswerContainer(
                           answerText: questionData['b'], myAnswer: 'b'),
                     ],
@@ -70,6 +77,9 @@ class _Question2State extends State<Question2> {
                     children: [
                       AnswerContainer(
                           answerText: questionData['c'], myAnswer: 'c'),
+                      const SizedBox(
+                        width: 20,
+                      ),
                       AnswerContainer(
                           answerText: questionData['d'], myAnswer: 'd'),
                     ],
@@ -116,14 +126,17 @@ class AnswerContainer extends StatelessWidget {
     String correct = Provider.of<QuestionProvider>(context, listen: false)
         .getQuestionDataAsMap['correct'];
 
-    return InkWell(
-      onTap: () => choosingAnswer(correct, myAnswer, userId, gameId, context),
-      child: Container(
-        padding: const EdgeInsets.all(10),
-        decoration: const BoxDecoration(color: Colors.amber),
-        width: 120,
-        height: 50,
-        child: Text(answerText),
+    return Flexible(
+      child: ElevatedButton(
+        style: ButtonStyle(
+            minimumSize: MaterialStateProperty.all(
+                const Size(double.infinity / 2, 200))),
+        onPressed: () =>
+            choosingAnswer(correct, myAnswer, userId, gameId, context),
+        child: Text(
+          answerText,
+          textAlign: TextAlign.center,
+        ),
       ),
     );
   }

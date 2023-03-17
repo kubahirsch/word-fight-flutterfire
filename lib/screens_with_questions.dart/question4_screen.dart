@@ -8,8 +8,10 @@ import 'package:wordfight/providers/user_provider.dart';
 import 'package:wordfight/resources/firestore_methods.dart';
 import 'package:wordfight/resources/question_methods.dart';
 import 'package:wordfight/screens/end_of_round_screen.dart';
+import 'package:wordfight/widgets/custom_percent_indicator.dart';
 
 import '../providers/game_provider.dart';
+import '../utils/colors.dart';
 
 class Question4 extends StatefulWidget {
   const Question4({super.key});
@@ -24,7 +26,7 @@ class _Question4State extends State<Question4> {
 
   @override
   void initState() {
-    Timer(const Duration(seconds: 15), () async {
+    Timer(const Duration(seconds: 10), () async {
       if (mounted) {
         UserProvider userProvider =
             Provider.of<UserProvider>(context, listen: false);
@@ -33,10 +35,10 @@ class _Question4State extends State<Question4> {
 
         await FirestoreMethods()
             .incrementUserRound(userProvider.getMyGame, userProvider.getUserId);
+
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => const EndOfRound(),
         ));
-        // }
       }
     });
     super.initState();
@@ -57,13 +59,11 @@ class _Question4State extends State<Question4> {
         context: context,
         builder: (context) {
           Future.delayed(const Duration(seconds: 1), () {
-            if (mounted) {
-              Navigator.of(context).pop(true);
-            }
+            Navigator.of(context).pop(true);
           });
           return const AlertDialog(
             shape: CircleBorder(),
-            title: Text('+5'),
+            title: Center(child: Text('+5')),
             backgroundColor: Color.fromARGB(255, 47, 189, 52),
           );
         },
@@ -73,14 +73,13 @@ class _Question4State extends State<Question4> {
         barrierDismissible: false,
         context: context,
         builder: (context) {
-          if (mounted) {
-            Future.delayed(const Duration(seconds: 1), () {
-              Navigator.of(context).pop(true);
-            });
-          }
+          Future.delayed(const Duration(seconds: 1), () {
+            Navigator.of(context).pop(true);
+          });
+
           return const AlertDialog(
             shape: CircleBorder(),
-            title: Text('X'),
+            title: Center(child: Text('X')),
             backgroundColor: Colors.red,
           );
         },
@@ -101,39 +100,55 @@ class _Question4State extends State<Question4> {
             .getQuestionDataAsMap;
 
     return Scaffold(
-      body: Column(
-        children: [
-          const SizedBox(height: 100),
-          LinearPercentIndicator(
-            percent: 1,
-            animation: true,
-            animationDuration: 15000,
-            lineHeight: 20,
-            backgroundColor: Colors.grey,
-            progressColor: Colors.amber,
-          ),
-          const Text(
-              'W tej rundzie musisz podać jak najwięcej synonimów, jeżeli będą w naszej bazie danych, to za każdy synonim dostajesz 3 pkt'),
-          TextField(
-            controller: synonymController,
-            decoration: const InputDecoration(
-              hintText: 'Synonim',
-              border: OutlineInputBorder(),
+      resizeToAvoidBottomInset: false,
+      appBar: AppBar(
+        title: const Text('Czwarte pytanie'),
+        centerTitle: true,
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(10.0),
+        child: Column(
+          children: [
+            const SizedBox(height: 20),
+            const CustomPercentIndicator(animationDuration: 10000),
+            const SizedBox(height: 40),
+            Text(
+              'W tej rundzie musisz podać jak najwięcej synonimów do słowa ${questionData['word']}',
+              style: const TextStyle(fontSize: 20),
+              textAlign: TextAlign.center,
             ),
-          ),
-          const SizedBox(height: 60),
-          ElevatedButton(
-            style: ElevatedButton.styleFrom(
-                padding:
-                    const EdgeInsets.symmetric(vertical: 32, horizontal: 20)),
-            onPressed: () {
-              checkSynonym(questionData['synonyms'],
-                  synonymController.text.toLowerCase(), context);
-              synonymController.clear();
-            },
-            child: const Text('Sprawdź !'),
-          ),
-        ],
+            const SizedBox(height: 10),
+            const Text(
+              'Za każdy synonim dostajesz 3 pkt',
+              style: TextStyle(fontSize: 20),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 40),
+            TextField(
+              controller: synonymController,
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(
+                    borderSide: BorderSide(color: buttonYellow)),
+                focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: buttonHoverYellow)),
+                hintText: 'synonim',
+              ),
+            ),
+            const SizedBox(height: 60),
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 32, horizontal: 20)),
+              onPressed: () {
+                checkSynonym(questionData['synonyms'],
+                    synonymController.text.toLowerCase(), context);
+                synonymController.clear();
+              },
+              child: const Text('Sprawdź !'),
+            ),
+            const SizedBox(height: 40),
+          ],
+        ),
       ),
     );
   }

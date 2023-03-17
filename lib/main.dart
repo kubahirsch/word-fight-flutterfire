@@ -5,7 +5,7 @@ import 'package:wordfight/providers/game_provider.dart';
 import 'package:wordfight/providers/question_provider.dart';
 import 'package:wordfight/providers/user_provider.dart';
 import 'package:wordfight/screens/choose_mode_screen.dart';
-import 'package:wordfight/screens/random_player_screen.dart';
+import 'package:wordfight/utils/colors.dart';
 import 'firebase_options.dart';
 
 void main() async {
@@ -34,8 +34,15 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
           title: 'Flutter Demo',
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
+          theme: ThemeData.dark().copyWith(
+            scaffoldBackgroundColor: backgroundGrey,
+            elevatedButtonTheme: ElevatedButtonThemeData(
+                style: ButtonStyle(
+              backgroundColor: MaterialStateProperty.all(buttonYellow),
+              minimumSize: MaterialStateProperty.all(const Size(200, 50)),
+            )),
+            textTheme: const TextTheme(
+                bodyMedium: TextStyle(fontSize: 20, color: Colors.white)),
           ),
           home: const ChooseMode()),
     );

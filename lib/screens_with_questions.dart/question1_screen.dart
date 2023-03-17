@@ -6,6 +6,7 @@ import 'package:wordfight/providers/user_provider.dart';
 import 'package:wordfight/resources/firestore_methods.dart';
 import 'package:wordfight/screens/end_of_round_screen.dart';
 import 'package:wordfight/screens_with_questions.dart/question2_screen.dart';
+import 'package:wordfight/utils/colors.dart';
 
 class Question1 extends StatefulWidget {
   const Question1({super.key});
@@ -32,56 +33,54 @@ class _Question1State extends State<Question1> {
               Provider.of<QuestionProvider>(context, listen: false)
                   .getQuestionDataAsMap;
           return Scaffold(
-            body: Center(
-              child: Column(
-                children: [
-                  const SizedBox(height: 100),
-                  const Text('Czy znasz wyraz'),
-                  const SizedBox(height: 40),
-                  Text(
-                    questionData['word'],
-                    style: const TextStyle(fontSize: 16),
-                  ),
-                  Row(
-                    children: [
-                      InkWell(
-                          onTap: () {
-                            Navigator.of(context)
-                                .pushReplacement(MaterialPageRoute(
-                              builder: (context) => const Question2(),
-                            ));
-                          },
-                          child: Container(
-                            decoration:
-                                const BoxDecoration(color: Colors.amber),
-                            width: 40,
-                            height: 50,
-                            child: const Text('tak'),
-                          )),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      InkWell(
-                        onTap: () async {
-                          await userProvider.refreshGameDataInProvider(
-                              userProvider.getMyGame);
-                          await FirestoreMethods().incrementUserRound(
-                              userProvider.getMyGame, userProvider.getUserId);
-                          Navigator.of(context)
-                              .pushReplacement(MaterialPageRoute(
-                            builder: (context) => const EndOfRound(),
-                          ));
-                        },
-                        child: Container(
-                          decoration: const BoxDecoration(color: Colors.amber),
-                          width: 40,
-                          height: 50,
-                          child: const Text('nie'),
-                        ),
-                      )
-                    ],
-                  )
-                ],
+            appBar: AppBar(
+              centerTitle: true,
+              title: const Text('Pierwsze pytanie'),
+            ),
+            body: Padding(
+              padding: const EdgeInsets.all(15.0),
+              child: Center(
+                child: Column(
+                  children: [
+                    const SizedBox(height: 30),
+                    const Text(
+                      'Czy znasz wyraz:',
+                      style:
+                          TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(height: 40),
+                    Text(
+                      questionData['word'],
+                      style: const TextStyle(fontSize: 30),
+                    ),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    CustomButton(
+                      text: 'TAK',
+                      onPressed: () {
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => const Question2(),
+                        ));
+                      },
+                    ),
+                    const SizedBox(
+                      height: 40,
+                    ),
+                    CustomButton(
+                      text: 'NIE',
+                      onPressed: () async {
+                        await userProvider
+                            .refreshGameDataInProvider(userProvider.getMyGame);
+                        await FirestoreMethods().incrementUserRound(
+                            userProvider.getMyGame, userProvider.getUserId);
+                        Navigator.of(context).pushReplacement(MaterialPageRoute(
+                          builder: (context) => const EndOfRound(),
+                        ));
+                      },
+                    )
+                  ],
+                ),
               ),
             ),
           );
@@ -91,6 +90,25 @@ class _Question1State extends State<Question1> {
           );
         }
       },
+    );
+  }
+}
+
+class CustomButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  final String text;
+  const CustomButton({super.key, required this.onPressed, required this.text});
+
+  @override
+  Widget build(BuildContext context) {
+    return ElevatedButton(
+      style: ButtonStyle(
+          minimumSize: MaterialStateProperty.all(const Size.fromHeight(100))),
+      onPressed: onPressed,
+      child: Text(
+        text,
+        style: const TextStyle(fontSize: 20),
+      ),
     );
   }
 }

@@ -25,24 +25,43 @@ class _LastState extends State<Last> {
     int rivalPoints =
         userProvider.getGameSnap!['points_${userProvider.getRivalId}'];
 
-    return Column(
-      children: [
-        (myPoints > rivalPoints)
-            ? const Text('Wygrywasz!!! ')
-            : (myPoints < rivalPoints)
-                ? const Text('Wygrywa Twój przeciwnik... :( ')
-                : const Text('REMIS !'),
-        const SizedBox(height: 50),
-        Text('Dostałeś $myPoints, a twój rywal $rivalPoints'),
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pushReplacement(MaterialPageRoute(
-              builder: (context) => const ChooseMode(),
-            ));
-          },
-          child: const Text('Nowa gra'),
-        )
-      ],
+    String myUsername = userProvider.getMyUsername;
+    String rivalUsername = userProvider.getRivalUsername;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Koniec gry'),
+        centerTitle: true,
+      ),
+      body: Center(
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 30,
+            ),
+            (myPoints > rivalPoints)
+                ? const Text('Wygrywasz!!! ')
+                : (myPoints < rivalPoints)
+                    ? const Text('Wygrywa Twój przeciwnik... :( ')
+                    : const Text('REMIS !'),
+            const SizedBox(height: 50),
+            Text('$myUsername: $myPoints'),
+            const SizedBox(height: 20),
+            const Text('vs'),
+            const SizedBox(height: 20),
+            Text('$rivalUsername: $rivalPoints'),
+            const SizedBox(height: 50),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => const ChooseMode(),
+                ));
+              },
+              child: const Text('Nowa gra'),
+            )
+          ],
+        ),
+      ),
     );
   }
 }

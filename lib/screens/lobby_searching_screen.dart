@@ -46,14 +46,27 @@ class _LobbySearchingState extends State<LobbySearching> {
 
           return const FoundPlayer();
         } else {
-          return Center(
-            child: Column(
-              children: const [
-                Text('Szukanie gracza'),
-                CircularProgressIndicator(
-                  color: Colors.amber,
-                )
-              ],
+          return Scaffold(
+            body: Center(
+              child: Column(
+                children: const [
+                  SizedBox(height: 100),
+                  Text('Szukamy dla ciebie zawodnika!',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 30,
+                      )),
+                  SizedBox(height: 100),
+                  SizedBox(
+                    height: 70,
+                    width: 70,
+                    child: CircularProgressIndicator(
+                      strokeWidth: 8,
+                      color: Colors.amber,
+                    ),
+                  )
+                ],
+              ),
             ),
           );
         }
