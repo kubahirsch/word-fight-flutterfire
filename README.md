@@ -5,7 +5,7 @@ This is multiplayer real time game based only on firebase and flutter. The game 
 
 
 ## Demo
+https://user-images.githubusercontent.com/45521098/225947453-6aa6cf88-4763-44d6-b85e-d2769a53ad8c.mp4
 
-
-
+(The app is not lagging it's my pc)
 
