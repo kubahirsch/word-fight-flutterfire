@@ -26,7 +26,7 @@ class _Question4State extends State<Question4> {
 
   @override
   void initState() {
-    Timer(const Duration(seconds: 10), () async {
+    Timer(const Duration(seconds: 15), () async {
       if (mounted) {
         UserProvider userProvider =
             Provider.of<UserProvider>(context, listen: false);
@@ -110,7 +110,7 @@ class _Question4State extends State<Question4> {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            const CustomPercentIndicator(animationDuration: 10000),
+            const CustomPercentIndicator(animationDuration: 15000),
             const SizedBox(height: 40),
             Text(
               'W tej rundzie musisz podać jak najwięcej synonimów do słowa ${questionData['word']}',
