@@ -27,10 +27,6 @@ class _LoginScreenState extends State<LoginScreen> {
     String res = await AuthMethods()
         .userSignIn(emailController.text, passwordController.text);
 
-    setState(() {
-      isLoading = false;
-    });
-
     if (res != 'success') {
       if (mounted) {
         showSnackBar(res, context);

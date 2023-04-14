@@ -2,7 +2,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wordfight/providers/user_provider.dart';
-import 'package:wordfight/resources/auth_methods.dart';
 import 'package:wordfight/screens/choose_mode_screen.dart';
 import 'package:wordfight/models/user.dart' as model;
 import 'package:wordfight/screens/profile_screen.dart';
