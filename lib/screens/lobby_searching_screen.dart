@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wordfight/providers/user_provider.dart';
+import 'package:wordfight/providers/game_provider.dart';
 import 'package:wordfight/screens/found_player_screen.dart';
 import 'package:wordfight/screens_with_questions.dart/question1_screen.dart';
 
@@ -15,9 +15,9 @@ class LobbySearching extends StatefulWidget {
 class _LobbySearchingState extends State<LobbySearching> {
   @override
   Widget build(BuildContext context) {
-    UserProvider userProvider =
-        Provider.of<UserProvider>(context, listen: false);
-    String userId = userProvider.getUserId;
+    GameProvider gameProvider =
+        Provider.of<GameProvider>(context, listen: false);
+    String userId = gameProvider.getUserId;
 
     return StreamBuilder(
       stream: FirebaseFirestore.instance.collection('games').snapshots(),
@@ -42,7 +42,7 @@ class _LobbySearchingState extends State<LobbySearching> {
         }
 
         if (gameId != '0') {
-          userProvider.refreshGameDataInProvider(gameId);
+          gameProvider.refreshGameDataInProvider(gameId);
 
           return const FoundPlayer();
         } else {

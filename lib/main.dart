@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wordfight/providers/game_provider.dart';
 import 'package:wordfight/providers/question_provider.dart';
+import 'package:wordfight/providers/game_provider.dart';
 import 'package:wordfight/providers/user_provider.dart';
 import 'package:wordfight/screens/choose_mode_screen.dart';
+import 'package:wordfight/screens/decision_tree.dart';
 import 'package:wordfight/utils/colors.dart';
 import 'firebase_options.dart';
 
@@ -23,13 +25,13 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (_) => UserProvider(),
+          create: (_) => GameProvider(),
         ),
         ChangeNotifierProvider(
           create: (_) => QuestionProvider(),
         ),
         ChangeNotifierProvider(
-          create: (_) => GameProvider(),
+          create: (_) => UserProvider(),
         ),
       ],
       child: MaterialApp(
@@ -44,7 +46,7 @@ class MyApp extends StatelessWidget {
             textTheme: const TextTheme(
                 bodyMedium: TextStyle(fontSize: 20, color: Colors.white)),
           ),
-          home: const ChooseMode()),
+          home: const DeicisionTree()),
     );
   }
 }

@@ -1,31 +1,26 @@
 import 'dart:async';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
-import 'package:wordfight/providers/game_provider.dart';
-import 'package:wordfight/resources/question_methods.dart';
-import 'package:wordfight/screens_with_questions.dart/question3_screen.dart';
-import 'package:wordfight/utils/colors.dart';
-import 'package:wordfight/widgets/custom_percent_indicator.dart';
+import 'package:wordfight/screens_for_single_player/question3_single_screen.dart';
 
 import '../providers/question_provider.dart';
+import '../widgets/custom_percent_indicator.dart';
 
-class Question2 extends StatefulWidget {
-  const Question2({super.key});
+class Question2Single extends StatefulWidget {
+  const Question2Single({super.key});
 
   @override
-  State<Question2> createState() => _Question2State();
+  State<Question2Single> createState() => _Question2SingleState();
 }
 
-class _Question2State extends State<Question2> {
+class _Question2SingleState extends State<Question2Single> {
   @override
   void initState() {
     Timer(const Duration(seconds: 10), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => const Question3(),
+          builder: (context) => const Question3Single(),
         ));
       }
     });
@@ -102,28 +97,8 @@ class AnswerContainer extends StatelessWidget {
   const AnswerContainer(
       {super.key, required this.answerText, required this.myAnswer});
 
-  void choosingAnswer(String correct, String myAnswer, String userId,
-      String gameId, BuildContext context) async {
-    if (myAnswer == correct) {
-      await QuestionMethods().addingPointsToDatabase(userId, gameId, 4);
-    } else {
-      await QuestionMethods().addingPointsToDatabase(userId, gameId, -4);
-    }
-
-    if (context.mounted) {
-      Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => const Question3(),
-      ));
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    GameProvider gameProvider =
-        Provider.of<GameProvider>(context, listen: false);
-    String userId = gameProvider.getUserId;
-    String gameId = gameProvider.getMyGame;
-
     String correct = Provider.of<QuestionProvider>(context, listen: false)
         .getQuestionDataAsMap['correct'];
 
@@ -132,8 +107,18 @@ class AnswerContainer extends StatelessWidget {
         style: ButtonStyle(
             minimumSize: MaterialStateProperty.all(
                 const Size(double.infinity / 2, 200))),
-        onPressed: () =>
-            choosingAnswer(correct, myAnswer, userId, gameId, context),
+        onPressed: () {
+          if (myAnswer == correct) {
+            Provider.of<QuestionProvider>(context, listen: false)
+                .changePoints(4);
+          } else {
+            Provider.of<QuestionProvider>(context, listen: false)
+                .changePoints(-4);
+          }
+          Navigator.of(context).pushReplacement(MaterialPageRoute(
+            builder: (context) => const Question3Single(),
+          ));
+        },
         child: Text(
           answerText,
           textAlign: TextAlign.center,

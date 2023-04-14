@@ -1,24 +1,21 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
-import 'package:wordfight/providers/game_provider.dart';
-import 'package:wordfight/resources/question_methods.dart';
-import 'package:wordfight/screens_with_questions.dart/question4_screen.dart';
-import 'package:wordfight/utils/colors.dart';
-import 'package:wordfight/widgets/custom_percent_indicator.dart';
+import 'package:wordfight/providers/question_provider.dart';
+import 'package:wordfight/screens_for_single_player/question4_single_screen.dart';
 
-import '../providers/question_provider.dart';
+import '../utils/colors.dart';
+import '../widgets/custom_percent_indicator.dart';
 
-class Question3 extends StatefulWidget {
-  const Question3({super.key});
+class Question3Single extends StatefulWidget {
+  const Question3Single({super.key});
 
   @override
-  State<Question3> createState() => _Question3State();
+  State<Question3Single> createState() => _Question3SingleState();
 }
 
-class _Question3State extends State<Question3> {
+class _Question3SingleState extends State<Question3Single> {
   List<String> visability = ['dontShow', 'dontShow', 'dontShow'];
 
   @override
@@ -26,17 +23,18 @@ class _Question3State extends State<Question3> {
     Timer(const Duration(seconds: 10), () {
       if (mounted) {
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => const Question4(),
+          builder: (context) => const Question4Single(),
         ));
       }
     });
     super.initState();
   }
 
-  void onSentenceTap(String userId, String gameId, int sentenceNum,
-      int correctSentence) async {
+  void onSentenceTap(int sentenceNum, int correctSentence) async {
+    var questionProvider =
+        Provider.of<QuestionProvider>(context, listen: false);
     if (sentenceNum == correctSentence) {
-      await QuestionMethods().addingPointsToDatabase(userId, gameId, 2);
+      questionProvider.changePoints(2);
 
       setState(() {
         visability[sentenceNum] = 'correct';
@@ -46,7 +44,7 @@ class _Question3State extends State<Question3> {
         visability[sentenceNum] = 'incorrect';
       });
 
-      await QuestionMethods().addingPointsToDatabase(userId, gameId, -2);
+      questionProvider.changePoints(-2);
     }
 
     if (visability[0] != 'dontShow' &&
@@ -54,7 +52,7 @@ class _Question3State extends State<Question3> {
         visability[2] != 'dontShow' &&
         mounted) {
       Navigator.of(context).pushReplacement(MaterialPageRoute(
-        builder: (context) => const Question4(),
+        builder: (context) => const Question4Single(),
       ));
     }
   }
@@ -124,7 +122,7 @@ class _Question3State extends State<Question3> {
 
 class SentenceRow extends StatefulWidget {
   final String sentence;
-  final Function(String, String, int, int) onSentenceTap;
+  final Function(int, int) onSentenceTap;
   final int sentenceNum;
 
   const SentenceRow(
@@ -140,11 +138,6 @@ class SentenceRow extends StatefulWidget {
 class SentenceRowState extends State<SentenceRow> {
   @override
   Widget build(BuildContext context) {
-    GameProvider gameProvider =
-        Provider.of<GameProvider>(context, listen: false);
-    String userId = gameProvider.getUserId;
-    String gameId = gameProvider.getMyGame;
-
     int correctSentence = Provider.of<QuestionProvider>(context, listen: false)
         .getQuestionDataAsMap['correctSentence'];
 
@@ -165,8 +158,8 @@ class SentenceRowState extends State<SentenceRow> {
                   style: const TextStyle(fontSize: 15),
                 )),
                 InkWell(
-                  onTap: () => widget.onSentenceTap(
-                      userId, gameId, widget.sentenceNum, correctSentence),
+                  onTap: () =>
+                      widget.onSentenceTap(widget.sentenceNum, correctSentence),
                   child: Container(
                     decoration: const BoxDecoration(
                         color: buttonHoverYellow,

@@ -4,7 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wordfight/providers/question_provider.dart';
-import 'package:wordfight/providers/user_provider.dart';
+import 'package:wordfight/providers/game_provider.dart';
 import 'package:wordfight/screens/last_screen.dart';
 import 'package:wordfight/screens_with_questions.dart/question1_screen.dart';
 import 'package:wordfight/utils/colors.dart';
@@ -19,11 +19,11 @@ class EndOfRound extends StatefulWidget {
 class _EndOfRoundState extends State<EndOfRound> {
   @override
   Widget build(BuildContext context) {
-    UserProvider userProvider =
-        Provider.of<UserProvider>(context, listen: false);
-    String gameId = userProvider.getMyGame;
-    String userId = userProvider.getUserId;
-    String rivalId = userProvider.getRivalId;
+    GameProvider gameProvider =
+        Provider.of<GameProvider>(context, listen: false);
+    String gameId = gameProvider.getMyGame;
+    String userId = gameProvider.getUserId;
+    String rivalId = gameProvider.getRivalId;
     Map<String, dynamic> questionData =
         Provider.of<QuestionProvider>(context).getQuestionDataAsMap;
 
@@ -42,12 +42,12 @@ class _EndOfRoundState extends State<EndOfRound> {
         }
         Map<String, dynamic> gameData =
             snapshot.data!.data() as Map<String, dynamic>;
-        if (gameData['round_$userId'] == userProvider.getQuestions.length &&
-            userProvider.getQuestions.length == gameData['round_$rivalId']) {
+        if (gameData['round_$userId'] == gameProvider.getQuestions.length &&
+            gameProvider.getQuestions.length == gameData['round_$rivalId']) {
           Timer(const Duration(seconds: 5), () async {
             // Refreshing game before going to end screen, so I know what is current status of the game
-            await userProvider
-                .refreshGameDataInProvider(userProvider.getMyGame);
+            await gameProvider
+                .refreshGameDataInProvider(gameProvider.getMyGame);
 
             if (mounted) {
               Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -57,8 +57,8 @@ class _EndOfRoundState extends State<EndOfRound> {
           });
 
           return BothEnded(
-              myUsername: userProvider.getMyUsername,
-              rivalUsername: userProvider.getRivalUsername,
+              myUsername: gameProvider.getMyUsername,
+              rivalUsername: gameProvider.getRivalUsername,
               round: gameData['round_$userId'],
               myPoints: gameData['points_$userId'],
               rivalPoints: gameData['points_$rivalId'],
@@ -66,8 +66,8 @@ class _EndOfRoundState extends State<EndOfRound> {
         } else if (gameData['round_$userId'] == gameData['round_$rivalId']) {
           Timer(const Duration(seconds: 5), () async {
             // Refreshing game before going to end screen, so I know what is current status of the game
-            await userProvider
-                .refreshGameDataInProvider(userProvider.getMyGame);
+            await gameProvider
+                .refreshGameDataInProvider(gameProvider.getMyGame);
 
             if (mounted) {
               Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -77,8 +77,8 @@ class _EndOfRoundState extends State<EndOfRound> {
           });
 
           return BothEnded(
-            myUsername: userProvider.getMyUsername,
-            rivalUsername: userProvider.getRivalUsername,
+            myUsername: gameProvider.getMyUsername,
+            rivalUsername: gameProvider.getRivalUsername,
             round: gameData['round_$userId'],
             myPoints: gameData['points_$userId'],
             rivalPoints: gameData['points_$rivalId'],
@@ -86,8 +86,8 @@ class _EndOfRoundState extends State<EndOfRound> {
           );
         } else {
           return OneEnded(
-            myUsername: userProvider.getMyUsername,
-            rivalUsername: userProvider.getRivalUsername,
+            myUsername: gameProvider.getMyUsername,
+            rivalUsername: gameProvider.getRivalUsername,
             round: gameData['round_$userId'],
             questionData: questionData,
             myPoints: gameData['points_$userId'],

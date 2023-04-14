@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wordfight/providers/user_provider.dart';
+import 'package:wordfight/providers/game_provider.dart';
 import 'package:wordfight/screens/choose_mode_screen.dart';
+import 'package:wordfight/screens/home_screen.dart';
 
 import '../resources/firestore_methods.dart';
 import 'random_player_screen.dart';
@@ -16,17 +17,17 @@ class Last extends StatefulWidget {
 class _LastState extends State<Last> {
   @override
   Widget build(BuildContext context) {
-    UserProvider userProvider =
-        Provider.of<UserProvider>(context, listen: true);
-    userProvider.refreshGameDataInProvider(userProvider.gameSnap!['gameId']);
+    GameProvider gameProvider =
+        Provider.of<GameProvider>(context, listen: true);
+    gameProvider.refreshGameDataInProvider(gameProvider.gameSnap!['gameId']);
 
     int myPoints =
-        userProvider.getGameSnap!['points_${userProvider.getUserId}'];
+        gameProvider.getGameSnap!['points_${gameProvider.getUserId}'];
     int rivalPoints =
-        userProvider.getGameSnap!['points_${userProvider.getRivalId}'];
+        gameProvider.getGameSnap!['points_${gameProvider.getRivalId}'];
 
-    String myUsername = userProvider.getMyUsername;
-    String rivalUsername = userProvider.getRivalUsername;
+    String myUsername = gameProvider.getMyUsername;
+    String rivalUsername = gameProvider.getRivalUsername;
 
     return Scaffold(
       appBar: AppBar(
@@ -54,7 +55,7 @@ class _LastState extends State<Last> {
             ElevatedButton(
               onPressed: () {
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => const ChooseMode(),
+                  builder: (context) => const HomeScreen(),
                 ));
               },
               child: const Text('Nowa gra'),

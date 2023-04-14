@@ -1,27 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wordfight/providers/user_provider.dart';
+import 'package:wordfight/providers/game_provider.dart';
 import 'package:wordfight/resources/firestore_methods.dart';
 
 import '../utils/colors.dart';
 import 'lobby_searching_screen.dart';
 
-class EntryScreen extends StatefulWidget {
-  const EntryScreen({super.key});
+class RandomPlayerScreen extends StatefulWidget {
+  const RandomPlayerScreen({super.key});
 
   @override
-  State<EntryScreen> createState() => _EntryScreenState();
+  State<RandomPlayerScreen> createState() => _RandomPlayerScreenState();
 }
 
-class _EntryScreenState extends State<EntryScreen> {
+class _RandomPlayerScreenState extends State<RandomPlayerScreen> {
   TextEditingController usernameController = TextEditingController();
-  TextEditingController roundController = TextEditingController();
   bool isLoading = false;
 
   @override
   void dispose() {
     usernameController.dispose();
-    roundController.dispose();
     super.dispose();
   }
 
@@ -29,7 +27,7 @@ class _EntryScreenState extends State<EntryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Graj z losowym przeciwnikiem'),
+        title: const Text('Gra z losowym przeciwnikiem'),
         centerTitle: true,
       ),
       resizeToAvoidBottomInset: false,
@@ -64,12 +62,13 @@ class _EntryScreenState extends State<EntryScreen> {
               setState(() {
                 isLoading = true;
               });
+              var gameProvider =
+                  Provider.of<GameProvider>(context, listen: false);
               String userId = await FirestoreMethods()
                   .addUserToLobby(usernameController.text, 3);
-              Provider.of<UserProvider>(context, listen: false)
-                  .setUserId(userId);
-              Provider.of<UserProvider>(context, listen: false)
-                  .setMyUsername(usernameController.text);
+              gameProvider.setUserId(userId);
+              gameProvider.setMyUsername(usernameController.text);
+
               Navigator.of(context).pushReplacement(MaterialPageRoute(
                 builder: (context) => const LobbySearching(),
               ));
@@ -88,7 +87,7 @@ class _EntryScreenState extends State<EntryScreen> {
                     decoration: const BoxDecoration(
                         color: buttonYellow,
                         borderRadius: BorderRadius.all(Radius.circular(10))),
-                    child: const Center(child: Text("GRAMY")),
+                    child: const Center(child: Text("Szukaj zawodnika")),
                   ),
           ),
         ]),

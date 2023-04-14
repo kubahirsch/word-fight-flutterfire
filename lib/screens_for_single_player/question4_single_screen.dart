@@ -1,25 +1,22 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:percent_indicator/linear_percent_indicator.dart';
 import 'package:provider/provider.dart';
-import 'package:wordfight/providers/question_provider.dart';
-import 'package:wordfight/providers/game_provider.dart';
-import 'package:wordfight/resources/firestore_methods.dart';
 import 'package:wordfight/resources/question_methods.dart';
-import 'package:wordfight/screens/end_of_round_screen.dart';
-import 'package:wordfight/widgets/custom_percent_indicator.dart';
+import 'package:wordfight/screens_for_single_player/end_of_round_single.dart';
 
+import '../providers/question_provider.dart';
 import '../utils/colors.dart';
+import '../widgets/custom_percent_indicator.dart';
 
-class Question4 extends StatefulWidget {
-  const Question4({super.key});
+class Question4Single extends StatefulWidget {
+  const Question4Single({super.key});
 
   @override
-  State<Question4> createState() => _Question4State();
+  State<Question4Single> createState() => _Question4SingleState();
 }
 
-class _Question4State extends State<Question4> {
+class _Question4SingleState extends State<Question4Single> {
   final synonymController = TextEditingController();
   List<String> addedSynonyms = [];
 
@@ -27,16 +24,8 @@ class _Question4State extends State<Question4> {
   void initState() {
     Timer(const Duration(seconds: 15), () async {
       if (mounted) {
-        GameProvider gameProvider =
-            Provider.of<GameProvider>(context, listen: false);
-
-        await gameProvider.refreshGameDataInProvider(gameProvider.getMyGame);
-
-        await FirestoreMethods()
-            .incrementUserRound(gameProvider.getMyGame, gameProvider.getUserId);
-
         Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => const EndOfRound(),
+          builder: (context) => const EndOfRoundSingle(),
         ));
       }
     });
@@ -45,12 +34,9 @@ class _Question4State extends State<Question4> {
 
   void checkSynonym(
       List<dynamic> synonyms, String inputSynonym, BuildContext context) {
-    String userId = Provider.of<GameProvider>(context, listen: false).getUserId;
-    String gameId = Provider.of<GameProvider>(context, listen: false).getMyGame;
-
     if (synonyms.contains(inputSynonym) &&
         !(addedSynonyms.contains(inputSynonym))) {
-      QuestionMethods().addingPointsToDatabase(userId, gameId, 5);
+      Provider.of<QuestionProvider>(context, listen: false).changePoints(5);
       setState(() {
         addedSynonyms.add(inputSynonym);
       });

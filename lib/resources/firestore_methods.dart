@@ -56,6 +56,54 @@ class FirestoreMethods {
     return userId;
   }
 
+  Future<List<String>> addUserToCustomLobby(
+      String username, String lobbyId, int numberOfRounds) async {
+    int millisecondsSinceEpoch = DateTime.now().millisecondsSinceEpoch;
+    String userId = millisecondsSinceEpoch.toString();
+    var usersInLobbyRef = _firestore.collection('usersInLobby_$lobbyId');
+
+    await usersInLobbyRef.doc(userId).set({
+      'username': username,
+      'userId': userId,
+      'inGame': 'not in game yet',
+    });
+
+    //counting users in lobby, and if there are 2 deleting them from lobby and adding to a list of users for a game
+    AggregateQuerySnapshot query = await usersInLobbyRef.count().get();
+
+    int numberOfUsersInLobby = query.count;
+
+    if (numberOfUsersInLobby == 2) {
+      var usersSnap = await usersInLobbyRef.get();
+      List<String> usersId = [];
+      List<String> usernames = [];
+      for (var doc in usersSnap.docs) {
+        String userId = doc.data()['userId'];
+        String username = doc.data()['username'];
+        usersId.add(userId);
+        usernames.add(username);
+        usersInLobbyRef.doc(userId).delete();
+      }
+
+      //Creating a list of random ids of questions for the game, depending on how many rounds users wants
+      List<int> questionsIds = [];
+
+      AggregateQuerySnapshot query =
+          await _firestore.collection('questions').count().get();
+
+      int numbersOfQuestions = query.count;
+
+      for (int i = 0; i < numberOfRounds; i += 1) {
+        questionsIds.add(random(0, numbersOfQuestions));
+      }
+
+      createGame(usersId, lobbyId, usernames, questionsIds);
+      return [userId, lobbyId];
+    }
+
+    return [userId, lobbyId];
+  }
+
   Future<void> createGame(List<String> users, String gameId,
       List<String> usernames, List<int> questionsIds) async {
     await _firestore.collection('games').doc(gameId).set({
