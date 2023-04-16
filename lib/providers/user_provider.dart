@@ -6,7 +6,7 @@ class UserProvider extends ChangeNotifier {
   User? _user;
   User? get getUser => _user;
 
-  void setUserInProvider() async {
+  Future<void> setUserInProvider() async {
     _user = await AuthMethods().getUserDetails();
     notifyListeners();
   }

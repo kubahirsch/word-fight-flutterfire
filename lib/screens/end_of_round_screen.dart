@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wordfight/providers/question_provider.dart';
 import 'package:wordfight/providers/game_provider.dart';
+import 'package:wordfight/providers/user_provider.dart';
 import 'package:wordfight/screens/last_screen.dart';
 import 'package:wordfight/screens_with_questions.dart/question1_screen.dart';
 import 'package:wordfight/utils/colors.dart';
@@ -17,6 +18,13 @@ class EndOfRound extends StatefulWidget {
 }
 
 class _EndOfRoundState extends State<EndOfRound> {
+  @override
+  void initState() {
+    super.initState();
+    Provider.of<GameProvider>(context, listen: false).refreshGameDataInProvider(
+        Provider.of<GameProvider>(context, listen: false).getMyGame);
+  }
+
   @override
   Widget build(BuildContext context) {
     GameProvider gameProvider =
@@ -42,10 +50,11 @@ class _EndOfRoundState extends State<EndOfRound> {
         }
         Map<String, dynamic> gameData =
             snapshot.data!.data() as Map<String, dynamic>;
+
         if (gameData['round_$userId'] == gameProvider.getQuestions.length &&
             gameProvider.getQuestions.length == gameData['round_$rivalId']) {
           Timer(const Duration(seconds: 5), () async {
-            // Refreshing game before going to end screen, so I know what is current status of the game
+            // Refreshing game before going to end screen, so opponent knows what is current status of the game
             await gameProvider
                 .refreshGameDataInProvider(gameProvider.getMyGame);
 
@@ -65,7 +74,7 @@ class _EndOfRoundState extends State<EndOfRound> {
               questionData: questionData);
         } else if (gameData['round_$userId'] == gameData['round_$rivalId']) {
           Timer(const Duration(seconds: 5), () async {
-            // Refreshing game before going to end screen, so I know what is current status of the game
+            // Refreshing game before going to end screen, so opponent knows what is current status of the game
             await gameProvider
                 .refreshGameDataInProvider(gameProvider.getMyGame);
 

@@ -1,7 +1,6 @@
 import 'dart:math';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 
 class QuestionMethods {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -10,13 +9,13 @@ class QuestionMethods {
     return min + Random().nextInt(max - min);
   }
 
-  Future<Map<String, dynamic>> getQuestion(int questionId) async {
+  Future<Map<String, dynamic>> getQuestion(
+      int questionId, String gameType) async {
     QuerySnapshot questionQuery = await _firestore
-        .collection('questions')
+        .collection(gameType)
         .where('id', isEqualTo: questionId)
         .limit(1)
         .get();
-
     DocumentSnapshot questionSnap = questionQuery.docs[0];
 
     return questionSnap.data() as Map<String, dynamic>;

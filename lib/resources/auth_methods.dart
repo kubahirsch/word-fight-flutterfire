@@ -23,6 +23,7 @@ class AuthMethods {
       String uid = _auth.currentUser!.uid;
       DocumentSnapshot userSnap =
           await _firestore.collection('users').doc(uid).get();
+      print(uid);
 
       return model.User.userModelFromSnap(userSnap);
     }
@@ -56,7 +57,7 @@ class AuthMethods {
           email: email,
           photoUrl: photoUrl,
         );
-
+        print(userCred.user!.uid);
         await _firestore
             .collection('users')
             .doc(userCred.user!.uid)

@@ -5,7 +5,6 @@ import 'package:wordfight/providers/game_provider.dart';
 import 'package:wordfight/resources/firestore_methods.dart';
 import 'package:wordfight/screens/end_of_round_screen.dart';
 import 'package:wordfight/screens_with_questions.dart/question2_screen.dart';
-import 'package:wordfight/utils/colors.dart';
 
 class Question1 extends StatefulWidget {
   const Question1({super.key});
@@ -20,75 +19,82 @@ class _Question1State extends State<Question1> {
     GameProvider gameProvider =
         Provider.of<GameProvider>(context, listen: false);
 
-    return FutureBuilder(
-      future: Provider.of<QuestionProvider>(context, listen: false)
-          .setQuestionDataInProvider(gameProvider.gameSnap!['questionsIds']
-              [(gameProvider.getRoundNumber) - 1]),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.done) {
-          Map<String, dynamic>? questionData =
-              Provider.of<QuestionProvider>(context, listen: false)
-                  .getQuestionDataAsMap;
-          return Scaffold(
-            appBar: AppBar(
-              automaticallyImplyLeading: false,
-              centerTitle: true,
-              title: const Text('Pierwsze pytanie'),
-            ),
-            body: Padding(
-              padding: const EdgeInsets.all(15.0),
-              child: Center(
-                child: Column(
-                  children: [
-                    const SizedBox(height: 30),
-                    const Text(
-                      'Czy znasz wyraz:',
-                      style:
-                          TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+    return (gameProvider.gameSnap == null)
+        ? const Center(child: CircularProgressIndicator())
+        : FutureBuilder(
+            future: Provider.of<QuestionProvider>(context, listen: false)
+                .setQuestionDataInProvider(
+                    gameProvider.gameSnap!['questionsIds']
+                        [(gameProvider.getRoundNumber)],
+                    gameProvider.getGameType),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                Map<String, dynamic>? questionData =
+                    Provider.of<QuestionProvider>(context, listen: false)
+                        .getQuestionDataAsMap;
+                return Scaffold(
+                  appBar: AppBar(
+                    automaticallyImplyLeading: false,
+                    centerTitle: true,
+                    title: const Text('Pierwsze pytanie'),
+                  ),
+                  body: Padding(
+                    padding: const EdgeInsets.all(15.0),
+                    child: Center(
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 30),
+                          const Text(
+                            'Czy znasz wyraz:',
+                            style: TextStyle(
+                                fontSize: 25, fontWeight: FontWeight.bold),
+                          ),
+                          const SizedBox(height: 40),
+                          Text(
+                            questionData['word'],
+                            style: const TextStyle(fontSize: 30),
+                          ),
+                          const SizedBox(
+                            height: 40,
+                          ),
+                          CustomButton(
+                            text: 'TAK',
+                            onPressed: () {
+                              Navigator.of(context)
+                                  .pushReplacement(MaterialPageRoute(
+                                builder: (context) => const Question2(),
+                              ));
+                            },
+                          ),
+                          const SizedBox(
+                            height: 40,
+                          ),
+                          CustomButton(
+                            text: 'NIE',
+                            onPressed: () async {
+                              await gameProvider.refreshGameDataInProvider(
+                                  gameProvider.getMyGame);
+                              await FirestoreMethods().incrementUserRound(
+                                  gameProvider.getMyGame,
+                                  gameProvider.getUserId);
+                              Navigator.of(context)
+                                  .pushReplacement(MaterialPageRoute(
+                                builder: (context) => const EndOfRound(),
+                              ));
+                            },
+                          )
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 40),
-                    Text(
-                      questionData['word'],
-                      style: const TextStyle(fontSize: 30),
-                    ),
-                    const SizedBox(
-                      height: 40,
-                    ),
-                    CustomButton(
-                      text: 'TAK',
-                      onPressed: () {
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => const Question2(),
-                        ));
-                      },
-                    ),
-                    const SizedBox(
-                      height: 40,
-                    ),
-                    CustomButton(
-                      text: 'NIE',
-                      onPressed: () async {
-                        await gameProvider
-                            .refreshGameDataInProvider(gameProvider.getMyGame);
-                        await FirestoreMethods().incrementUserRound(
-                            gameProvider.getMyGame, gameProvider.getUserId);
-                        Navigator.of(context).pushReplacement(MaterialPageRoute(
-                          builder: (context) => const EndOfRound(),
-                        ));
-                      },
-                    )
-                  ],
-                ),
-              ),
-            ),
+                  ),
+                );
+              } else {
+                return const Center(
+                  child: CircularProgressIndicator(color: Colors.amber),
+                );
+              }
+            },
           );
-        } else {
-          return const Center(
-            child: CircularProgressIndicator(color: Colors.amber),
-          );
-        }
-      },
-    );
   }
 }
 

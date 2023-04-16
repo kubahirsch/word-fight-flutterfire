@@ -64,9 +64,13 @@ class _RandomPlayerScreenState extends State<RandomPlayerScreen> {
               });
               var gameProvider =
                   Provider.of<GameProvider>(context, listen: false);
-              String userId = await FirestoreMethods()
-                  .addUserToLobby(usernameController.text, 3);
-              gameProvider.setUserId(userId);
+              var userId = await FirestoreMethods().addUserToLobby(
+                  usernameController.text,
+                  '',
+                  3,
+                  Provider.of<GameProvider>(context, listen: false).getGameType,
+                  false);
+              gameProvider.setUserId(userId[0]);
               gameProvider.setMyUsername(usernameController.text);
 
               Navigator.of(context).pushReplacement(MaterialPageRoute(

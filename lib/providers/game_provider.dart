@@ -22,6 +22,8 @@ class GameProvider extends ChangeNotifier {
   String get getMyUsername => myUsername!;
   String? rivalUsername;
   String get getRivalUsername => rivalUsername!;
+  String? gameType;
+  String get getGameType => gameType!;
 
   Map<String, dynamic>? gameSnap;
   Map<String, dynamic>? get getGameSnap => gameSnap;
@@ -32,20 +34,26 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setGameId(String userIdf) {
-    myGame = userIdf;
+  void setGameId(String userIdInput) {
+    myGame = userIdInput;
 
     notifyListeners();
   }
 
-  void setMyUsername(String myUsernamef) {
-    myUsername = myUsernamef;
+  void setMyUsername(String myUsernameInput) {
+    myUsername = myUsernameInput;
 
     notifyListeners();
   }
 
   void increaseRoundNumber() {
     roundNumber += 1;
+  }
+
+  void setGameType(String gameTypeInput) {
+    gameType = gameTypeInput;
+
+    notifyListeners();
   }
 
   Future<void> refreshGameDataInProvider(String gameId) async {
@@ -61,7 +69,7 @@ class GameProvider extends ChangeNotifier {
     myGame = gameSnap!['gameId'];
 
     questions = gameSnap!['questionsIds'];
-
+    roundNumber = gameSnap!['round_$userId'];
     notifyListeners();
   }
 }

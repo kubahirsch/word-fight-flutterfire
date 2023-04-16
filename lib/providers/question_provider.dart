@@ -11,8 +11,10 @@ class QuestionProvider extends ChangeNotifier {
     points += newPoints;
   }
 
-  Future<void> setQuestionDataInProvider(int questionId) async {
-    questionDataAsMap = await QuestionMethods().getQuestion(questionId);
+  Future<void> setQuestionDataInProvider(
+      int questionId, String gameType) async {
+    questionDataAsMap =
+        await QuestionMethods().getQuestion(questionId, gameType);
     notifyListeners();
   }
 }

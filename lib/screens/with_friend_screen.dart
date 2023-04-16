@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wordfight/utils/utils.dart';
 
 import '../providers/game_provider.dart';
 import '../resources/firestore_methods.dart';
@@ -21,14 +22,23 @@ class _WithFriendScreenState extends State<WithFriendScreen> {
 
   Future<void> joiningGame() async {
     var gameProvider = Provider.of<GameProvider>(context, listen: false);
-    var userIdAndGameId = await FirestoreMethods().addUserToCustomLobby(
-        usernameController.text, lobbyIdController.text, 3);
-    gameProvider.setUserId(userIdAndGameId[0]);
-    gameProvider.setMyUsername(usernameController.text);
-    gameProvider.setGameId(userIdAndGameId[1]);
-    Navigator.of(context).pushReplacement(MaterialPageRoute(
-      builder: (context) => const LobbySearching(),
-    ));
+    var userIdAndGameId = await FirestoreMethods().addUserToLobby(
+      usernameController.text,
+      lobbyIdController.text,
+      3,
+      Provider.of<GameProvider>(context, listen: false).getGameType,
+      true,
+    );
+    if (userIdAndGameId[0] == 'exists' && mounted) {
+      showSnackBar('Lobby o takiej nazwie już istnieje i jest pełne', context);
+    } else {
+      gameProvider.setUserId(userIdAndGameId[0]);
+      gameProvider.setMyUsername(usernameController.text);
+      gameProvider.setGameId(userIdAndGameId[1]);
+      Navigator.of(context).pushReplacement(MaterialPageRoute(
+        builder: (context) => const LobbySearching(),
+      ));
+    }
   }
 
   @override

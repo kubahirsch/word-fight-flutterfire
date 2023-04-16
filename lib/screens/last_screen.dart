@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wordfight/providers/game_provider.dart';
@@ -7,18 +8,13 @@ import 'package:wordfight/screens/home_screen.dart';
 import '../resources/firestore_methods.dart';
 import 'random_player_screen.dart';
 
-class Last extends StatefulWidget {
+class Last extends StatelessWidget {
   const Last({super.key});
 
   @override
-  State<Last> createState() => _LastState();
-}
-
-class _LastState extends State<Last> {
-  @override
   Widget build(BuildContext context) {
     GameProvider gameProvider =
-        Provider.of<GameProvider>(context, listen: true);
+        Provider.of<GameProvider>(context, listen: false);
     gameProvider.refreshGameDataInProvider(gameProvider.gameSnap!['gameId']);
 
     int myPoints =
@@ -53,10 +49,18 @@ class _LastState extends State<Last> {
             Text('$rivalUsername: $rivalPoints'),
             const SizedBox(height: 50),
             ElevatedButton(
-              onPressed: () {
+              onPressed: () async {
                 Navigator.of(context).pushReplacement(MaterialPageRoute(
                   builder: (context) => const HomeScreen(),
                 ));
+
+                var gameRef = await FirebaseFirestore.instance
+                    .collection('games')
+                    .doc(gameProvider.getMyGame)
+                    .get();
+                if (gameRef.exists) {
+                  FirestoreMethods().deleteGame(gameProvider.getMyGame);
+                }
               },
               child: const Text('Nowa gra'),
             )
