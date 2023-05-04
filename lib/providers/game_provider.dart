@@ -15,7 +15,7 @@ class GameProvider extends ChangeNotifier {
   String? rivalId;
   String get getRivalId => rivalId!;
   String? myGame;
-  String get getMyGame => myGame!;
+  String? get getMyGame => myGame;
   List<dynamic> questions = [];
   List<dynamic> get getQuestions => questions;
   String? myUsername;
@@ -34,7 +34,7 @@ class GameProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void setGameId(String userIdInput) {
+  void setGameId(String? userIdInput) {
     myGame = userIdInput;
 
     notifyListeners();

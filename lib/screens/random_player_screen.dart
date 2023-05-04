@@ -2,8 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wordfight/providers/game_provider.dart';
 import 'package:wordfight/resources/firestore_methods.dart';
+import 'package:wordfight/widgets/appbar.dart';
+import 'package:wordfight/utils/utils.dart';
 
-import '../utils/colors.dart';
+import '../providers/user_provider.dart';
+import '../widgets/custom_elevated_button.dart';
 import 'lobby_searching_screen.dart';
 
 class RandomPlayerScreen extends StatefulWidget {
@@ -14,87 +17,70 @@ class RandomPlayerScreen extends StatefulWidget {
 }
 
 class _RandomPlayerScreenState extends State<RandomPlayerScreen> {
-  TextEditingController usernameController = TextEditingController();
   bool isLoading = false;
 
   @override
-  void dispose() {
-    usernameController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    var user = Provider.of<UserProvider>(context, listen: false).getUser;
+    var gameProvider = Provider.of<GameProvider>(context, listen: false);
+
+    String gameType = gameTypeToDisplay(context);
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Gra z losowym przeciwnikiem'),
-        centerTitle: true,
-      ),
+      appBar: const CustomAppBar(),
       resizeToAvoidBottomInset: false,
       body: Padding(
-        padding: const EdgeInsets.all(12.0),
-        child: Column(children: [
-          const SizedBox(
-            height: 120,
-          ),
-          const Text(
-            'Gra trwa 3 rundy. Można dostać minusowe i dodatnie punkty',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white),
-          ),
-          const SizedBox(height: 30),
-          TextField(
-            style: const TextStyle(color: Colors.white),
-            controller: usernameController,
-            decoration: const InputDecoration(
-              border: OutlineInputBorder(
-                  borderSide: BorderSide(color: buttonYellow)),
-              focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: buttonHoverYellow)),
-              hintText: 'podaj swój nick',
-            ),
-          ),
-          const SizedBox(
-            height: 100,
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              setState(() {
-                isLoading = true;
-              });
-              var gameProvider =
-                  Provider.of<GameProvider>(context, listen: false);
-              var userId = await FirestoreMethods().addUserToLobby(
-                  usernameController.text,
-                  '',
-                  3,
-                  Provider.of<GameProvider>(context, listen: false).getGameType,
-                  false);
-              gameProvider.setUserId(userId[0]);
-              gameProvider.setMyUsername(usernameController.text);
-
-              Navigator.of(context).pushReplacement(MaterialPageRoute(
-                builder: (context) => const LobbySearching(),
-              ));
-            },
-            child: isLoading
-                ? const SizedBox(
-                    width: 300,
-                    height: 60,
-                    child: Center(
-                      child: CircularProgressIndicator(color: Colors.amber),
+        padding: const EdgeInsets.all(30.0),
+        child: Center(
+          child: Column(
+            children: [
+              const Spacer(),
+              SizedBox(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Losowy przeciwnik',
+                      style: TextStyle(color: Colors.black, fontSize: 40),
                     ),
-                  )
-                : Container(
-                    width: 300,
-                    height: 60,
-                    decoration: const BoxDecoration(
-                        color: buttonYellow,
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    child: const Center(child: Text("Szukaj zawodnika")),
-                  ),
+                    Text(
+                      gameType,
+                      style: const TextStyle(color: Colors.black, fontSize: 20),
+                    ),
+                  ],
+                ),
+              ),
+              const Spacer(),
+              CustomElevatedButton(
+                text: 'Szukaj przeciwnika',
+                onPressed: () async {
+                  setState(() {
+                    isLoading = true;
+                  });
+
+                  var userId = await FirestoreMethods().addUserToLobby(
+                      user!.username,
+                      '',
+                      3,
+                      Provider.of<GameProvider>(context, listen: false)
+                          .getGameType,
+                      false);
+                  gameProvider.setUserId(userId[0]);
+                  gameProvider.setMyUsername(user.username);
+                  if (mounted) {
+                    Navigator.of(context).pushReplacement(MaterialPageRoute(
+                      builder: (context) => const LobbySearching(),
+                    ));
+                  }
+                },
+                isLoading: isLoading,
+              ),
+              const SizedBox(
+                height: 40,
+              ),
+            ],
           ),
-        ]),
+        ),
       ),
     );
   }

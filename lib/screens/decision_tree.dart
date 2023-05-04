@@ -19,7 +19,6 @@ class _DeicisionTreeState extends State<DeicisionTree> {
         builder: (context, snapshot) {
           var user = snapshot.data;
           if (user != null) {
-            print(user);
             return const HomeScreen();
           } else {
             return const LoginScreen();

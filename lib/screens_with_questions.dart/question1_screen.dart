@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:swipe_cards/draggable_card.dart';
+import 'package:swipe_cards/swipe_cards.dart';
 import 'package:wordfight/providers/question_provider.dart';
 import 'package:wordfight/providers/game_provider.dart';
 import 'package:wordfight/resources/firestore_methods.dart';
 import 'package:wordfight/screens/end_of_round_screen.dart';
 import 'package:wordfight/screens_with_questions.dart/question2_screen.dart';
+
+import '../providers/swipe_provider.dart';
+import '../widgets/icon_container.dart';
+import '../widgets/word_container.dart';
 
 class Question1 extends StatefulWidget {
   const Question1({super.key});
@@ -18,6 +24,33 @@ class _Question1State extends State<Question1> {
   Widget build(BuildContext context) {
     GameProvider gameProvider =
         Provider.of<GameProvider>(context, listen: false);
+    SwipeProvider swipeProvider =
+        Provider.of<SwipeProvider>(context, listen: false);
+
+    MatchEngine matchEngine = MatchEngine(swipeItems: [
+      SwipeItem(likeAction: () {
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => const Question2(),
+        ));
+      }, nopeAction: () async {
+        await gameProvider.refreshGameDataInProvider(gameProvider.getMyGame!);
+        await FirestoreMethods().incrementUserRound(
+            gameProvider.getMyGame!, gameProvider.getUserId);
+        Navigator.of(context).pushReplacement(MaterialPageRoute(
+          builder: (context) => const EndOfRound(),
+        ));
+      }, onSlideUpdate: (SlideRegion? region) async {
+        if (region == SlideRegion.inNopeRegion) {
+          swipeProvider.setSelection('left');
+        }
+        if (region == null) {
+          swipeProvider.clearSelection();
+        }
+        if (region == SlideRegion.inLikeRegion) {
+          swipeProvider.setSelection('right');
+        }
+      })
+    ]);
 
     return (gameProvider.gameSnap == null)
         ? const Center(child: CircularProgressIndicator())
@@ -38,54 +71,52 @@ class _Question1State extends State<Question1> {
                     centerTitle: true,
                     title: const Text('Pierwsze pytanie'),
                   ),
-                  body: Padding(
-                    padding: const EdgeInsets.all(15.0),
-                    child: Center(
-                      child: Column(
-                        children: [
-                          const SizedBox(height: 30),
-                          const Text(
-                            'Czy znasz wyraz:',
-                            style: TextStyle(
-                                fontSize: 25, fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 40),
-                          Text(
-                            questionData['word'],
-                            style: const TextStyle(fontSize: 30),
-                          ),
-                          const SizedBox(
-                            height: 40,
-                          ),
-                          CustomButton(
-                            text: 'TAK',
-                            onPressed: () {
-                              Navigator.of(context)
-                                  .pushReplacement(MaterialPageRoute(
-                                builder: (context) => const Question2(),
-                              ));
-                            },
-                          ),
-                          const SizedBox(
-                            height: 40,
-                          ),
-                          CustomButton(
-                            text: 'NIE',
-                            onPressed: () async {
-                              await gameProvider.refreshGameDataInProvider(
-                                  gameProvider.getMyGame);
-                              await FirestoreMethods().incrementUserRound(
-                                  gameProvider.getMyGame,
-                                  gameProvider.getUserId);
-                              Navigator.of(context)
-                                  .pushReplacement(MaterialPageRoute(
-                                builder: (context) => const EndOfRound(),
-                              ));
-                            },
-                          )
-                        ],
+                  body: Column(
+                    children: [
+                      const SizedBox(height: 30),
+                      const Text(
+                        'Czy znasz wyraz:',
+                        style: TextStyle(
+                            fontSize: 25, fontWeight: FontWeight.bold),
                       ),
-                    ),
+                      const SizedBox(height: 40),
+                      SizedBox(
+                        height: 300,
+                        width: 400,
+                        child: SwipeCards(
+                            matchEngine: matchEngine,
+                            onStackFinished: () {},
+                            itemBuilder: (context, index) {
+                              return WordContainer(
+                                word: questionData['word'],
+                              );
+                            }),
+                      ),
+                      const SizedBox(height: 50),
+                      Row(
+                        children: [
+                          const Spacer(flex: 3),
+                          Consumer<SwipeProvider>(
+                            builder: (_, value, __) {
+                              return IconContainer(
+                                icon: Icons.close,
+                                isSelected: value.getIsLeftSelected,
+                              );
+                            },
+                          ),
+                          const Spacer(),
+                          Consumer<SwipeProvider>(
+                            builder: (_, value, __) {
+                              return IconContainer(
+                                icon: Icons.done,
+                                isSelected: value.getIsRightSelected,
+                              );
+                            },
+                          ),
+                          const Spacer(flex: 3),
+                        ],
+                      )
+                    ],
                   ),
                 );
               } else {

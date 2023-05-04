@@ -1,11 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:wordfight/providers/user_provider.dart';
 import 'package:wordfight/utils/utils.dart';
+import 'package:wordfight/widgets/appbar.dart';
 
 import '../providers/game_provider.dart';
 import '../resources/firestore_methods.dart';
-import '../utils/colors.dart';
+import '../widgets/custom_elevated_button.dart';
 import 'lobby_searching_screen.dart';
 
 class WithFriendScreen extends StatefulWidget {
@@ -17,13 +19,14 @@ class WithFriendScreen extends StatefulWidget {
 
 class _WithFriendScreenState extends State<WithFriendScreen> {
   bool isLoading = false;
-  TextEditingController usernameController = TextEditingController();
   TextEditingController lobbyIdController = TextEditingController();
 
   Future<void> joiningGame() async {
     var gameProvider = Provider.of<GameProvider>(context, listen: false);
+    String username =
+        Provider.of<UserProvider>(context, listen: false).getUser!.username;
     var userIdAndGameId = await FirestoreMethods().addUserToLobby(
-      usernameController.text,
+      username,
       lobbyIdController.text,
       3,
       Provider.of<GameProvider>(context, listen: false).getGameType,
@@ -33,7 +36,7 @@ class _WithFriendScreenState extends State<WithFriendScreen> {
       showSnackBar('Lobby o takiej nazwie już istnieje i jest pełne', context);
     } else {
       gameProvider.setUserId(userIdAndGameId[0]);
-      gameProvider.setMyUsername(usernameController.text);
+      gameProvider.setMyUsername(username);
       gameProvider.setGameId(userIdAndGameId[1]);
       Navigator.of(context).pushReplacement(MaterialPageRoute(
         builder: (context) => const LobbySearching(),
@@ -43,148 +46,142 @@ class _WithFriendScreenState extends State<WithFriendScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Gra z znajomym'),
-        centerTitle: true,
+    List<Widget> textButtons = [
+      TextButton(
+        style: TextButton.styleFrom(foregroundColor: Colors.black),
+        onPressed: () async {
+          setState(() {
+            isLoading = true;
+          });
+          joiningGame();
+        },
+        child: const Text('Tak'),
       ),
+      TextButton(
+        style: TextButton.styleFrom(foregroundColor: Colors.black),
+        onPressed: () {
+          setState(() {
+            isLoading = false;
+          });
+          Navigator.pop(context);
+        },
+        child: const Text('Nie'),
+      ),
+    ];
+
+    String gameType = gameTypeToDisplay(context);
+
+    return Scaffold(
+      appBar: const CustomAppBar(),
       resizeToAvoidBottomInset: false,
       body: Padding(
         padding: const EdgeInsets.all(12.0),
-        child: Column(children: [
-          const SizedBox(
-            height: 120,
-          ),
-          const Text(
-            'Gra trwa 3 rundy. Można dostać minusowe i dodatnie punkty',
-            textAlign: TextAlign.center,
-            style: TextStyle(color: Colors.white),
-          ),
-          const SizedBox(height: 30),
-          TextFieldWithBorder(
-            usernameController: usernameController,
-            hintText: 'Podaj swój nick',
-          ),
-          TextFieldWithBorder(
-            usernameController: lobbyIdController,
-            hintText:
-                'Podaj id lobby do którego chcesz dołączyć, lub które chcesz stworzyć',
-          ),
-          const SizedBox(
-            height: 100,
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              bool lobbyExist = true;
-              final snapshot = await FirebaseFirestore.instance
-                  .collection('usersInLobby_${lobbyIdController.text}')
-                  .get();
-              if (snapshot.size == 0) {
-                lobbyExist = false;
-              }
-
-              if (!lobbyExist) {
-                if (mounted) {
-                  showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                            title: const Text(
-                                'Lobby o takiej nazwie nie istnieje. '),
-                            content: const Text(
-                                'Czy chcesz stworzyć nowe lobby o takiej nazwie i czekać aż ktoś dołączy? '),
-                            actions: [
-                              TextButton(
-                                  onPressed: () async {
-                                    setState(() {
-                                      isLoading = true;
-                                    });
-                                    joiningGame();
-                                  },
-                                  child: const Text('Tak')),
-                              TextButton(
-                                  onPressed: () {
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text('Nie')),
-                            ],
-                          ));
-                }
-              } else {
-                setState(() {
-                  isLoading = true;
-                });
-                joiningGame();
-              }
-            },
-            child: isLoading
-                ? const LoadingSizedBox()
-                : Container(
-                    width: 300,
-                    height: 60,
-                    decoration: const BoxDecoration(
-                        color: buttonYellow,
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    child: const Center(child: Text("Dołącz do lobby")),
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 120,
+            ),
+            SizedBox(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Graj z przyjacielem',
+                    style: TextStyle(color: Colors.black, fontSize: 40),
                   ),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              bool lobbyExist = true;
-              final snapshot = await FirebaseFirestore.instance
-                  .collection('usersInLobby_${lobbyIdController.text}')
-                  .get();
-              if (snapshot.size == 0) {
-                lobbyExist = false;
-              }
-
-              if (lobbyExist) {
-                if (mounted) {
-                  showDialog(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                            title: const Text(
-                                'Lobby o takiej nazwie już istnieje. '),
-                            content: const Text(
-                                'Czy chcesz dołączyć do tego lobby ?'),
-                            actions: [
-                              TextButton(
-                                  onPressed: () async {
-                                    setState(() {
-                                      isLoading = true;
-                                    });
-                                    joiningGame();
-                                  },
-                                  child: const Text('Tak')),
-                              TextButton(
-                                  onPressed: () {
-                                    Navigator.pop(context);
-                                  },
-                                  child: const Text('Nie')),
-                            ],
-                          ));
-                }
-              } else {
-                setState(() {
-                  isLoading = true;
-                });
-                joiningGame();
-              }
-            },
-            child: isLoading
-                ? const LoadingSizedBox()
-                : Container(
-                    width: 300,
-                    height: 60,
-                    decoration: const BoxDecoration(
-                        color: buttonYellow,
-                        borderRadius: BorderRadius.all(Radius.circular(10))),
-                    child: const Center(child: Text("Stwórz lobby")),
+                  Text(
+                    gameType,
+                    style: const TextStyle(color: Colors.black, fontSize: 20),
                   ),
-          ),
-        ]),
+                ],
+              ),
+            ),
+            const Spacer(),
+            TextFieldWithBorder(
+              usernameController: lobbyIdController,
+              hintText: 'Nazwa lobby...',
+            ),
+            const SizedBox(
+              height: 30,
+            ),
+            CustomElevatedButton(
+                text: 'Dołącz do tego lobby',
+                onPressed: () async {
+                  if (lobbyIdController.text.isEmpty) {
+                    showSnackBar(
+                        'Podaj nazwę lobby, do którego chcesz dołączyć, albo które chcesz stworzyć',
+                        context);
+                  } else {
+                    bool lobbyExist = true;
+                    final snapshot = await FirebaseFirestore.instance
+                        .collection('usersInLobby_${lobbyIdController.text}')
+                        .get();
+                    if (snapshot.size == 0) {
+                      lobbyExist = false;
+                    }
+
+                    if (!lobbyExist) {
+                      if (mounted) {
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                  title: const Text(
+                                      'Lobby o takiej nazwie nie istnieje. '),
+                                  content: const Text(
+                                      'Czy chcesz stworzyć nowe lobby o takiej nazwie i czekać aż ktoś dołączy? '),
+                                  actions: textButtons,
+                                ));
+                      }
+                    } else {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      joiningGame();
+                    }
+                  }
+                },
+                isLoading: isLoading),
+            const SizedBox(height: 30),
+            CustomElevatedButton(
+                text: 'Stwórz to lobby',
+                onPressed: () async {
+                  if (lobbyIdController.text.isEmpty) {
+                    showSnackBar(
+                        'Podaj nazwę lobby, do którego chcesz dołączyć, albo które chcesz stworzyć',
+                        context);
+                  } else {
+                    bool lobbyExist = true;
+                    final snapshot = await FirebaseFirestore.instance
+                        .collection('usersInLobby_${lobbyIdController.text}')
+                        .get();
+                    if (snapshot.size == 0) {
+                      lobbyExist = false;
+                    }
+
+                    if (lobbyExist) {
+                      if (mounted) {
+                        showDialog(
+                            context: context,
+                            builder: (context) => AlertDialog(
+                                  title: const Text(
+                                      'Lobby o takiej nazwie już istnieje. '),
+                                  content: const Text(
+                                      'Czy chcesz dołączyć do tego lobby ?'),
+                                  actions: textButtons,
+                                ));
+                      }
+                    } else {
+                      setState(() {
+                        isLoading = true;
+                      });
+                      joiningGame();
+                    }
+                  }
+                },
+                isLoading: isLoading),
+            const Spacer(),
+          ],
+        ),
       ),
     );
   }
@@ -220,13 +217,15 @@ class TextFieldWithBorder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return TextField(
-      style: const TextStyle(color: Colors.white),
+      style: const TextStyle(
+          color: Colors.black, fontFamily: 'Oswald', fontSize: 20),
       controller: usernameController,
       decoration: InputDecoration(
         border: const OutlineInputBorder(
-            borderSide: BorderSide(color: buttonYellow)),
+            borderSide:
+                BorderSide(color: Colors.black, style: BorderStyle.solid)),
         focusedBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: buttonHoverYellow)),
+            borderSide: BorderSide(color: Colors.black)),
         hintText: hintText,
       ),
     );

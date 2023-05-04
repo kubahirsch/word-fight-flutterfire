@@ -1,14 +1,13 @@
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:wordfight/providers/user_provider.dart';
-import 'package:wordfight/screens/choose_mode_screen.dart';
 import 'package:wordfight/models/user.dart' as model;
-import 'package:wordfight/screens/profile_screen.dart';
+import 'package:wordfight/screens/choose_mode_screen_new.dart';
 
 import '../providers/game_provider.dart';
+import '../widgets/appbar.dart';
 import 'admin_screen.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -22,10 +21,27 @@ class _HomeScreenState extends State<HomeScreen> {
   model.User? user;
 
   List<Widget> containers = [
-    const ListTab(gameType: 'questionsPolishEasy', backgroundUrl: Colors.amber),
-    const ListTab(gameType: 'questions', backgroundUrl: Colors.black),
-    const ListTab(gameType: 'questionsEnglishA1', backgroundUrl: Colors.white),
-    const ListTab(gameType: 'questionsEnglishA2', backgroundUrl: Colors.blue),
+    const Text(
+      'Wybierz grę',
+      style:
+          TextStyle(color: Colors.black, fontSize: 40, fontFamily: 'Playfair'),
+    ),
+    const ListTab(
+        gameType: 'questionsPolishEasy',
+        backgroundUrl: Colors.amber,
+        gameTypeToDisplay: 'Proste polskie'),
+    const ListTab(
+        gameType: 'questions',
+        backgroundUrl: Colors.amber,
+        gameTypeToDisplay: 'Trudne polskie'),
+    const ListTab(
+        gameType: 'questionsEnglishA1',
+        backgroundUrl: Colors.amber,
+        gameTypeToDisplay: 'Angielskie A1'),
+    const ListTab(
+        gameType: 'questionsEnglishA2',
+        backgroundUrl: Colors.amber,
+        gameTypeToDisplay: 'Angielskie A2'),
   ];
 
   @override
@@ -45,8 +61,10 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    print('Home screen widget built');
+
     if (user != null) {
-      if (user!.email == "admin@admin.com") {
+      if (user!.email == "admin@admin.com" && containers.length == 5) {
         setState(() {
           containers.add(const ButtonWithContext());
         });
@@ -58,29 +76,7 @@ class _HomeScreenState extends State<HomeScreen> {
             child: CircularProgressIndicator(),
           )
         : Scaffold(
-            appBar: AppBar(
-              actions: [
-                InkWell(
-                  onTap: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (context) => const ProfileScreen(),
-                      ),
-                    );
-                  },
-                  child:
-                      (FirebaseAuth.instance.currentUser!.isAnonymous == true)
-                          ? const CircleAvatar(
-                              backgroundImage:
-                                  AssetImage('assets/default_profile_pic.png'),
-                            )
-                          : CircleAvatar(
-                              backgroundImage: NetworkImage(user!.photoUrl),
-                            ),
-                )
-              ],
-              title: const Text('Home screen'),
-            ),
+            appBar: const CustomAppBar(),
             body: ListView.separated(
               padding: const EdgeInsets.all(15),
               itemCount: containers.length,
@@ -112,12 +108,14 @@ class ButtonWithContext extends StatelessWidget {
 
 class ListTab extends StatelessWidget {
   final String gameType;
+  final String gameTypeToDisplay;
   final Color backgroundUrl;
 
   const ListTab({
     super.key,
     required this.gameType,
     required this.backgroundUrl,
+    required this.gameTypeToDisplay,
   });
 
   @override
@@ -127,16 +125,14 @@ class ListTab extends StatelessWidget {
         Provider.of<GameProvider>(context, listen: false).setGameType(gameType);
         Navigator.of(context).push(
           MaterialPageRoute(
-            builder: (context) => ChooseMode(
-              gameType: gameType,
-            ),
+            builder: (context) => const ChooseModeScreen(),
           ),
         );
       },
       child: Stack(
         children: [
           Container(
-            height: 90,
+            height: 120,
             decoration: BoxDecoration(
                 borderRadius: const BorderRadius.all(
                   Radius.circular(10),
@@ -147,7 +143,10 @@ class ListTab extends StatelessWidget {
           Positioned(
             bottom: 10,
             left: 10,
-            child: Text(gameType),
+            child: Text(
+              gameTypeToDisplay,
+              style: const TextStyle(fontSize: 20),
+            ),
           ),
         ],
       ),

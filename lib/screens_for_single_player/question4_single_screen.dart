@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:wordfight/resources/question_methods.dart';
 import 'package:wordfight/screens_for_single_player/end_of_round_single.dart';
 
 import '../providers/question_provider.dart';
@@ -19,6 +18,7 @@ class Question4Single extends StatefulWidget {
 class _Question4SingleState extends State<Question4Single> {
   final synonymController = TextEditingController();
   List<String> addedSynonyms = [];
+  bool isHolding = false;
 
   @override
   void initState() {
@@ -88,52 +88,106 @@ class _Question4SingleState extends State<Question4Single> {
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('Czwarte pytanie'),
-        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
           children: [
+            Text(
+              '${questionData['word'].toUpperCase()}',
+              style: const TextStyle(fontSize: 30),
+              textAlign: TextAlign.center,
+            ),
             const SizedBox(height: 20),
             const CustomPercentIndicator(animationDuration: 15000),
-            const SizedBox(height: 40),
-            Text(
-              'W tej rundzie musisz podać jak najwięcej synonimów do słowa: ${questionData['word'].toUpperCase()}',
-              style: const TextStyle(fontSize: 20),
-              textAlign: TextAlign.center,
-            ),
-            const SizedBox(height: 10),
-            const Text(
-              'Za każdy synonim dostajesz 3 pkt',
-              style: TextStyle(fontSize: 20),
-              textAlign: TextAlign.center,
-            ),
             const SizedBox(height: 40),
             TextField(
               controller: synonymController,
               decoration: const InputDecoration(
                 border: OutlineInputBorder(
-                    borderSide: BorderSide(color: buttonYellow)),
+                    borderSide: BorderSide(color: Colors.grey)),
                 focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(color: buttonHoverYellow)),
-                hintText: 'synonim',
+                    borderSide: BorderSide(color: Colors.black)),
+                hintText: 'Podaj synonim...',
               ),
             ),
             const SizedBox(height: 60),
-            ElevatedButton(
-              style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(vertical: 32, horizontal: 20)),
-              onPressed: () {
+            ButtonWithHold(
+              width: double.infinity,
+              height: 50,
+              onTap: () {
                 checkSynonym(questionData['synonyms'],
                     synonymController.text.toLowerCase(), context);
                 synonymController.clear();
               },
-              child: const Text('Sprawdź !'),
+              text: 'Sprawdź',
             ),
             const SizedBox(height: 40),
+            ButtonWithHold(
+              onTap: () {
+                Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (context) => const EndOfRoundSingle(),
+                ));
+              },
+              text: 'Nie znam więcej synonimów',
+              width: double.infinity,
+              height: 50,
+            ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class ButtonWithHold extends StatefulWidget {
+  final void Function() onTap;
+  final double? width;
+  final double? height;
+  final String text;
+  const ButtonWithHold({
+    super.key,
+    required this.onTap,
+    required this.text,
+    required this.width,
+    required this.height,
+  });
+
+  @override
+  State<ButtonWithHold> createState() => ButtonWithHoldState();
+}
+
+class ButtonWithHoldState extends State<ButtonWithHold> {
+  bool isHolding = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onHighlightChanged: (value) {
+        if (value) {
+          setState(() {
+            isHolding = true;
+          });
+        } else {
+          setState(() {
+            isHolding = false;
+          });
+        }
+      },
+      onTap: widget.onTap,
+      child: Container(
+        decoration: BoxDecoration(
+            color: isHolding ? Colors.black : Colors.white,
+            border: Border.all(color: Colors.black),
+            borderRadius: const BorderRadius.all(Radius.circular(10))),
+        width: widget.width,
+        height: widget.height,
+        child: Center(
+          child: Text(
+            widget.text,
+            style: TextStyle(
+                fontSize: 18, color: isHolding ? Colors.white : Colors.black),
+          ),
         ),
       ),
     );

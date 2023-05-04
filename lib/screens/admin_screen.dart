@@ -1,7 +1,6 @@
 //This Screen I created with chat gpt
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:wordfight/models/question.dart';
 import 'package:wordfight/utils/create_fields_in_db.dart';
@@ -24,7 +23,7 @@ class _AdminScreenState extends State<AdminScreen> {
   String? sentence1;
   String? sentence2;
   String? sentence3;
-  String? correctSentence;
+  int? correctSentence;
   List<String>? synonyms;
   String? gameType;
 
@@ -157,7 +156,7 @@ class _AdminScreenState extends State<AdminScreen> {
                   }
                   return null;
                 },
-                onSaved: (value) => correctSentence = value,
+                onSaved: (value) => correctSentence = int.parse(value!),
               ),
               TextFormField(
                 decoration: const InputDecoration(

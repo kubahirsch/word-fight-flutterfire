@@ -30,10 +30,10 @@ class _Question4State extends State<Question4> {
         GameProvider gameProvider =
             Provider.of<GameProvider>(context, listen: false);
 
-        await gameProvider.refreshGameDataInProvider(gameProvider.getMyGame);
+        await gameProvider.refreshGameDataInProvider(gameProvider.getMyGame!);
 
-        await FirestoreMethods()
-            .incrementUserRound(gameProvider.getMyGame, gameProvider.getUserId);
+        await FirestoreMethods().incrementUserRound(
+            gameProvider.getMyGame!, gameProvider.getUserId);
 
         Navigator.of(context).pushReplacement(MaterialPageRoute(
           builder: (context) => const EndOfRound(),
@@ -46,7 +46,8 @@ class _Question4State extends State<Question4> {
   void checkSynonym(
       List<dynamic> synonyms, String inputSynonym, BuildContext context) {
     String userId = Provider.of<GameProvider>(context, listen: false).getUserId;
-    String gameId = Provider.of<GameProvider>(context, listen: false).getMyGame;
+    String gameId =
+        Provider.of<GameProvider>(context, listen: false).getMyGame!;
 
     if (synonyms.contains(inputSynonym) &&
         !(addedSynonyms.contains(inputSynonym))) {

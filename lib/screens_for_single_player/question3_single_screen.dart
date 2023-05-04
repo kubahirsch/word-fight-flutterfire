@@ -5,8 +5,10 @@ import 'package:provider/provider.dart';
 import 'package:wordfight/providers/question_provider.dart';
 import 'package:wordfight/screens_for_single_player/question4_single_screen.dart';
 
+import '../screens_with_questions.dart/question3_screen.dart';
 import '../utils/colors.dart';
 import '../widgets/custom_percent_indicator.dart';
+import '../widgets/result_container.dart';
 
 class Question3Single extends StatefulWidget {
   const Question3Single({super.key});
@@ -64,55 +66,47 @@ class _Question3SingleState extends State<Question3Single> {
             .getQuestionDataAsMap;
 
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text('Trzecie pytanie'),
-        centerTitle: true,
-      ),
       body: Padding(
-        padding: const EdgeInsets.all(10.0),
+        padding: const EdgeInsets.all(15.0),
         child: Column(
           children: [
-            const SizedBox(height: 100),
-            const CustomPercentIndicator(animationDuration: 10000),
-            const SizedBox(height: 30),
+            const SizedBox(height: 70),
             const Text(
-              'W tej rundzie musisz powiedzieć czy zdanie jest poprawnie użyte. ',
+              'Czy zdanie jest poprawnie użyte ?',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 25),
+              style: TextStyle(fontSize: 23),
             ),
-            const SizedBox(height: 50),
-            (visability[0] == 'dontShow')
-                ? SentenceRow(
-                    sentenceNum: 0,
-                    sentence: questionData['sentence1'],
-                    onSentenceTap: onSentenceTap)
-                : (visability[0] == 'correct')
-                    ? const Text('DOBRZE, +3')
-                    : const Text(
-                        'ŹLE, to nie jest poprawne użycie tego słowa :(, tracisz 3 punkty'),
-            const SizedBox(height: 20),
-            (visability[1] == 'dontShow')
-                ? SentenceRow(
-                    sentenceNum: 1,
-                    sentence: questionData['sentence2'],
-                    onSentenceTap: onSentenceTap)
-                : (visability[1] == 'correct')
-                    ? const Text('DOBRZE, +3')
-                    : const Text(
-                        'ŹLE, to nie jest poprawne użycie tego słowa :(, tracisz 3 punkty'),
-            const SizedBox(height: 20),
-            (visability[2] == 'dontShow')
-                ? SentenceRow(
-                    sentenceNum: 2,
-                    sentence: questionData['sentence3'],
-                    onSentenceTap: onSentenceTap,
-                  )
-                : (visability[2] == 'correct')
-                    ? const Text('DOBRZE, +3')
-                    : const Text(
-                        'ŹLE, to nie jest poprawne użycie tego słowa :(, tracisz 3 punkty'),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
+            const CustomPercentIndicator(animationDuration: 10000),
+            SizedBox(
+              height: MediaQuery.of(context).size.height / 1.6,
+              width: double.infinity,
+              child: ListView.separated(
+                separatorBuilder: (context, index) {
+                  return const SizedBox(height: 30);
+                },
+                itemCount: 3,
+                itemBuilder: (context, index) {
+                  if (visability[index] == 'dontShow') {
+                    return SentenceRow(
+                        sentenceNum: index,
+                        sentence: questionData['sentence${index + 1}'],
+                        onSentenceTap: onSentenceTap);
+                  } else {
+                    if (visability[index] == 'correct') {
+                      return ResultContainer(
+                          sentence: questionData['sentence${index + 1}'],
+                          isCorrect: true);
+                    } else {
+                      return ResultContainer(
+                        sentence: questionData['sentence${index + 1}'],
+                        isCorrect: false,
+                      );
+                    }
+                  }
+                },
+              ),
+            )
           ],
         ),
       ),
@@ -136,48 +130,83 @@ class SentenceRow extends StatefulWidget {
 }
 
 class SentenceRowState extends State<SentenceRow> {
+  bool isHolding = false;
   @override
   Widget build(BuildContext context) {
     int correctSentence = Provider.of<QuestionProvider>(context, listen: false)
         .getQuestionDataAsMap['correctSentence'];
 
-    return Column(
-      children: [
-        Container(
-          decoration: BoxDecoration(
-              border: Border.all(color: buttonYellow),
-              borderRadius: const BorderRadius.all(Radius.circular(5))),
-          height: 80,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Row(
-              children: [
-                Flexible(
-                    child: Text(
-                  widget.sentence,
-                  style: const TextStyle(fontSize: 15),
-                )),
-                InkWell(
-                  onTap: () =>
-                      widget.onSentenceTap(widget.sentenceNum, correctSentence),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                        color: buttonHoverYellow,
-                        borderRadius: BorderRadius.all(Radius.circular(5))),
-                    width: 50,
-                    height: double.infinity,
-                    child: const Center(
-                      child: Text(
-                        'TAK',
-                      ),
-                    ),
-                  ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0),
+      child: Column(
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: const BorderRadius.all(Radius.circular(10)),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  blurRadius: 5,
+                  spreadRadius: 5,
                 ),
               ],
             ),
+            width: double.infinity,
+            height: 150,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Text(
+                    widget.sentence,
+                    style: const TextStyle(fontSize: 20),
+                  ),
+                  const Spacer(),
+                  Row(
+                    children: [
+                      const Spacer(),
+                      InkWell(
+                        onHighlightChanged: (value) {
+                          if (value) {
+                            setState(() {
+                              isHolding = true;
+                            });
+                          } else {
+                            setState(() {
+                              isHolding = false;
+                            });
+                          }
+                        },
+                        onTap: () => widget.onSentenceTap(
+                            widget.sentenceNum, correctSentence),
+                        child: Container(
+                          decoration: BoxDecoration(
+                              color: isHolding ? Colors.black : Colors.white,
+                              border: Border.all(color: Colors.black),
+                              borderRadius:
+                                  const BorderRadius.all(Radius.circular(10))),
+                          width: 80,
+                          height: 30,
+                          child: Center(
+                            child: Text(
+                              'TAK',
+                              style: TextStyle(
+                                  fontSize: 18,
+                                  color:
+                                      isHolding ? Colors.white : Colors.black),
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }

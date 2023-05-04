@@ -1,5 +1,3 @@
-import 'dart:typed_data';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
@@ -23,7 +21,6 @@ class AuthMethods {
       String uid = _auth.currentUser!.uid;
       DocumentSnapshot userSnap =
           await _firestore.collection('users').doc(uid).get();
-      print(uid);
 
       return model.User.userModelFromSnap(userSnap);
     }
@@ -57,7 +54,6 @@ class AuthMethods {
           email: email,
           photoUrl: photoUrl,
         );
-        print(userCred.user!.uid);
         await _firestore
             .collection('users')
             .doc(userCred.user!.uid)
@@ -97,9 +93,6 @@ class AuthMethods {
     String res = 'Some error occured';
 
     try {
-      UserCredential userCred = await _auth.signInAnonymously();
-      print(userCred);
-
       res = 'success';
     } on FirebaseAuthException catch (e) {
       res = e.code;

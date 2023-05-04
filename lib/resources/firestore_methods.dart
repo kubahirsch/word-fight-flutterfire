@@ -17,12 +17,13 @@ class FirestoreMethods {
     CollectionReference usersInLobbyRef;
 
     if (isCustom) {
-      usersInLobbyRef = _firestore.collection('usersInLobby_$lobbyId');
+      usersInLobbyRef =
+          _firestore.collection('usersInLobby_${lobbyId}_$gameType');
       if (await FirestoreMethods().checkIfDocExists(lobbyId)) {
         return ['alreadyExist'];
       }
     } else {
-      usersInLobbyRef = _firestore.collection('usersInLobby');
+      usersInLobbyRef = _firestore.collection('usersInLobby_$gameType');
     }
 
     await usersInLobbyRef.doc(userId).set({

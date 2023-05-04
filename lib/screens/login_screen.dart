@@ -47,11 +47,10 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         showSnackBar(res, context);
       }
+      setState(() {
+        isLoading1 = false;
+      });
     }
-
-    setState(() {
-      isLoading1 = false;
-    });
   }
 
   @override

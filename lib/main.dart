@@ -4,9 +4,11 @@ import 'package:provider/provider.dart';
 import 'package:wordfight/providers/game_provider.dart';
 import 'package:wordfight/providers/question_provider.dart';
 import 'package:wordfight/providers/game_provider.dart';
+import 'package:wordfight/providers/swipe_provider.dart';
 import 'package:wordfight/providers/user_provider.dart';
 import 'package:wordfight/screens/choose_mode_screen.dart';
 import 'package:wordfight/screens/decision_tree.dart';
+import 'package:wordfight/screens/home_screen.dart';
 import 'package:wordfight/utils/colors.dart';
 import 'firebase_options.dart';
 
@@ -33,20 +35,27 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => UserProvider(),
         ),
+        ChangeNotifierProvider(
+          create: (_) => SwipeProvider(),
+        ),
       ],
       child: MaterialApp(
-          title: 'Flutter Demo',
-          theme: ThemeData.dark().copyWith(
-            scaffoldBackgroundColor: backgroundGrey,
-            elevatedButtonTheme: ElevatedButtonThemeData(
-                style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all(buttonYellow),
-              minimumSize: MaterialStateProperty.all(const Size(200, 50)),
-            )),
-            textTheme: const TextTheme(
-                bodyMedium: TextStyle(fontSize: 20, color: Colors.white)),
+        title: 'Flutter Demo',
+        theme: ThemeData(
+          scaffoldBackgroundColor: bezowy,
+          appBarTheme: const AppBarTheme(
+            elevation: 0,
+            backgroundColor: bezowy,
+            iconTheme: IconThemeData(color: Colors.black),
           ),
-          home: const DeicisionTree()),
+          textTheme:
+              const TextTheme(bodyMedium: TextStyle(fontFamily: 'Playfair')),
+        ),
+        home: const DeicisionTree(),
+        routes: {
+          '/homeScreen': (BuildContext context) => const HomeScreen(),
+        },
+      ),
     );
   }
 }

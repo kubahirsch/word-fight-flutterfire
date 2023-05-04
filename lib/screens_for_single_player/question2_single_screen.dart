@@ -36,21 +36,18 @@ class _Question2SingleState extends State<Question2Single> {
     return Scaffold(
       appBar: AppBar(
         automaticallyImplyLeading: false,
-        title: const Text('Drugie pytanie'),
-        centerTitle: true,
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10.0),
         child: Column(
           children: [
-            const SizedBox(height: 100),
-            const CustomPercentIndicator(animationDuration: 10000),
-            const SizedBox(height: 30),
             Text(
-              'Co oznacza to słowo ${questionData["word"]}? ',
-              style: const TextStyle(fontSize: 20),
+              '${questionData["word"]}'.toUpperCase(),
+              style: const TextStyle(fontSize: 30, fontFamily: 'Playfair'),
             ),
-            const SizedBox(height: 30),
+            const SizedBox(height: 60),
+            const CustomPercentIndicator(animationDuration: 10000),
+            const SizedBox(height: 60),
             Column(
               children: [
                 Padding(
@@ -103,11 +100,8 @@ class AnswerContainer extends StatelessWidget {
         .getQuestionDataAsMap['correct'];
 
     return Flexible(
-      child: ElevatedButton(
-        style: ButtonStyle(
-            minimumSize: MaterialStateProperty.all(
-                const Size(double.infinity / 2, 200))),
-        onPressed: () {
+      child: InkWell(
+        onTap: () {
           if (myAnswer == correct) {
             Provider.of<QuestionProvider>(context, listen: false)
                 .changePoints(4);
@@ -119,9 +113,26 @@ class AnswerContainer extends StatelessWidget {
             builder: (context) => const Question3Single(),
           ));
         },
-        child: Text(
-          answerText,
-          textAlign: TextAlign.center,
+        child: Container(
+          decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: const BorderRadius.all(
+                Radius.circular(20),
+              ),
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    blurRadius: 7,
+                    spreadRadius: 5)
+              ]),
+          width: double.infinity / 2,
+          height: 200,
+          child: Center(
+              child: Text(
+            answerText,
+            textAlign: TextAlign.center,
+            style: const TextStyle(fontSize: 20),
+          )),
         ),
       ),
     );

@@ -7,8 +7,10 @@ import 'package:wordfight/providers/question_provider.dart';
 import 'package:wordfight/providers/game_provider.dart';
 import 'package:wordfight/providers/user_provider.dart';
 import 'package:wordfight/screens/last_screen.dart';
+import 'package:wordfight/screens/rival_left_screen.dart';
 import 'package:wordfight/screens_with_questions.dart/question1_screen.dart';
 import 'package:wordfight/utils/colors.dart';
+import 'package:wordfight/utils/utils.dart';
 
 class EndOfRound extends StatefulWidget {
   const EndOfRound({super.key});
@@ -22,16 +24,18 @@ class _EndOfRoundState extends State<EndOfRound> {
   void initState() {
     super.initState();
     Provider.of<GameProvider>(context, listen: false).refreshGameDataInProvider(
-        Provider.of<GameProvider>(context, listen: false).getMyGame);
+        Provider.of<GameProvider>(context, listen: false).getMyGame!);
   }
 
   @override
   Widget build(BuildContext context) {
     GameProvider gameProvider =
         Provider.of<GameProvider>(context, listen: false);
-    String gameId = gameProvider.getMyGame;
+
+    String? gameId = gameProvider.getMyGame;
     String userId = gameProvider.getUserId;
     String rivalId = gameProvider.getRivalId;
+
     Map<String, dynamic> questionData =
         Provider.of<QuestionProvider>(context).getQuestionDataAsMap;
 
@@ -41,6 +45,9 @@ class _EndOfRoundState extends State<EndOfRound> {
           .doc(gameId)
           .snapshots(),
       builder: (context, snapshot) {
+        if (snapshot.data == null) {
+          return const RivalLeftScreen();
+        }
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
               child: CircularProgressIndicator(color: Colors.white));
@@ -56,7 +63,7 @@ class _EndOfRoundState extends State<EndOfRound> {
           Timer(const Duration(seconds: 5), () async {
             // Refreshing game before going to end screen, so opponent knows what is current status of the game
             await gameProvider
-                .refreshGameDataInProvider(gameProvider.getMyGame);
+                .refreshGameDataInProvider(gameProvider.getMyGame!);
 
             if (mounted) {
               Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -76,7 +83,7 @@ class _EndOfRoundState extends State<EndOfRound> {
           Timer(const Duration(seconds: 5), () async {
             // Refreshing game before going to end screen, so opponent knows what is current status of the game
             await gameProvider
-                .refreshGameDataInProvider(gameProvider.getMyGame);
+                .refreshGameDataInProvider(gameProvider.getMyGame!);
 
             if (mounted) {
               Navigator.of(context).pushReplacement(MaterialPageRoute(
@@ -108,7 +115,7 @@ class _EndOfRoundState extends State<EndOfRound> {
   }
 }
 
-class BothEnded extends StatefulWidget {
+class BothEnded extends StatelessWidget {
   final int myPoints;
   final int rivalPoints;
   final Map<String, dynamic> questionData;
@@ -125,31 +132,26 @@ class BothEnded extends StatefulWidget {
       required this.rivalUsername});
 
   @override
-  State<BothEnded> createState() => _BothEndedState();
-}
-
-class _BothEndedState extends State<BothEnded> {
-  @override
   Widget build(BuildContext context) {
-    String word = widget.questionData['word'];
-    String meaning = widget.questionData["${widget.questionData['correct']}"];
-    List<dynamic> synonyms = widget.questionData['synonyms'];
+    String word = questionData['word'];
+    String meaning = questionData["${questionData['correct']}"];
+    List<dynamic> synonyms = questionData['synonyms'];
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Koniec ${widget.round}/3 rundy'),
+        title: Text('Koniec $round/3 rundy'),
         centerTitle: true,
       ),
       body: Center(
         child: Column(
           children: [
             const SizedBox(height: 70),
-            Text('${widget.myUsername}: ${widget.myPoints}',
+            Text('$myUsername: $myPoints',
                 style: const TextStyle(fontSize: 50)),
             const SizedBox(height: 10),
             const Text('vs', style: TextStyle(fontSize: 30)),
             const SizedBox(height: 10),
-            Text('${widget.rivalUsername}: ${widget.rivalPoints}',
+            Text('$rivalUsername: $rivalPoints',
                 style: const TextStyle(fontSize: 50)),
             const SizedBox(height: 70),
             Padding(
@@ -190,7 +192,7 @@ class _BothEndedState extends State<BothEnded> {
   }
 }
 
-class OneEnded extends StatefulWidget {
+class OneEnded extends StatelessWidget {
   final Map<String, dynamic> questionData;
   final int myPoints;
   final int rivalPoints;
@@ -207,18 +209,13 @@ class OneEnded extends StatefulWidget {
       required this.rivalUsername});
 
   @override
-  State<OneEnded> createState() => _OneEndedState();
-}
-
-class _OneEndedState extends State<OneEnded> {
-  @override
   Widget build(BuildContext context) {
-    String word = widget.questionData['word'];
-    String meaning = widget.questionData["${widget.questionData['correct']}"];
-    List<dynamic> synonyms = widget.questionData['synonyms'];
+    String word = questionData['word'];
+    String meaning = questionData["${questionData['correct']}"];
+    List<dynamic> synonyms = questionData['synonyms'];
     return Scaffold(
       appBar: AppBar(
-        title: Text('Koniec ${widget.round}/3 rundy'),
+        title: Text('Koniec $round/3 rundy'),
         centerTitle: true,
       ),
       body: Center(
@@ -227,12 +224,12 @@ class _OneEndedState extends State<OneEnded> {
             const SizedBox(height: 20),
             const Text('Poczekaj aż twój przeciwnik skończy rundę'),
             const SizedBox(height: 70),
-            Text('${widget.myUsername}: ${widget.myPoints}',
+            Text('$myUsername: $myPoints',
                 style: const TextStyle(fontSize: 50)),
             const SizedBox(height: 10),
             const Text('vs', style: TextStyle(fontSize: 30)),
             const SizedBox(height: 10),
-            Text('${widget.rivalUsername}: ${widget.rivalPoints}',
+            Text('$rivalUsername: $rivalPoints',
                 style: const TextStyle(fontSize: 50)),
             const SizedBox(height: 70),
             Padding(

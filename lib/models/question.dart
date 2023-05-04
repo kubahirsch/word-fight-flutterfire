@@ -12,7 +12,7 @@ class Question {
   final String sentence1;
   final String sentence2;
   final String sentence3;
-  final String correctSentence;
+  final int correctSentence;
   final List<String> synonyms;
   final int id;
 

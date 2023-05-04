@@ -5,3 +5,4 @@ const darkerGrey = Color.fromARGB(255, 73, 73, 73);
 const darkestGrey = Color.fromARGB(255, 66, 66, 66);
 const buttonYellow = Color.fromARGB(255, 156, 167, 59);
 const buttonHoverYellow = Color.fromARGB(255, 129, 138, 50);
+const bezowy = Color.fromARGB(255, 245, 245, 220);

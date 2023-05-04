@@ -19,8 +19,8 @@ class _CustomPercentIndicatorState extends State<CustomPercentIndicator> {
       animation: true,
       animationDuration: widget.animationDuration,
       lineHeight: 33,
-      backgroundColor: darkerGrey,
-      progressColor: buttonYellow,
+      backgroundColor: Colors.white,
+      progressColor: Color.fromARGB(255, 63, 63, 63),
       barRadius: const Radius.circular(10),
     );
   }

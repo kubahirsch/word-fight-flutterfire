@@ -50,16 +50,14 @@ class Last extends StatelessWidget {
             const SizedBox(height: 50),
             ElevatedButton(
               onPressed: () async {
-                Navigator.of(context).pushReplacement(MaterialPageRoute(
-                  builder: (context) => const HomeScreen(),
-                ));
+                Navigator.of(context).pop();
 
                 var gameRef = await FirebaseFirestore.instance
                     .collection('games')
                     .doc(gameProvider.getMyGame)
                     .get();
                 if (gameRef.exists) {
-                  FirestoreMethods().deleteGame(gameProvider.getMyGame);
+                  FirestoreMethods().deleteGame(gameProvider.getMyGame!);
                 }
               },
               child: const Text('Nowa gra'),

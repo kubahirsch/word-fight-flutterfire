@@ -10,6 +10,7 @@ import 'package:wordfight/utils/colors.dart';
 import 'package:wordfight/widgets/custom_percent_indicator.dart';
 
 import '../providers/question_provider.dart';
+import '../widgets/result_container.dart';
 
 class Question3 extends StatefulWidget {
   const Question3({super.key});
@@ -23,13 +24,13 @@ class _Question3State extends State<Question3> {
 
   @override
   void initState() {
-    Timer(const Duration(seconds: 10), () {
-      if (mounted) {
-        Navigator.of(context).pushReplacement(MaterialPageRoute(
-          builder: (context) => const Question4(),
-        ));
-      }
-    });
+    // Timer(const Duration(seconds: 10), () {
+    //   if (mounted) {
+    //     Navigator.of(context).pushReplacement(MaterialPageRoute(
+    //       builder: (context) => const Question4(),
+    //     ));
+    //   }
+    // });
     super.initState();
   }
 
@@ -66,55 +67,78 @@ class _Question3State extends State<Question3> {
             .getQuestionDataAsMap;
 
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text('Trzecie pytanie'),
-        centerTitle: true,
-      ),
       body: Padding(
         padding: const EdgeInsets.all(10.0),
         child: Column(
           children: [
-            const SizedBox(height: 100),
-            const CustomPercentIndicator(animationDuration: 10000),
-            const SizedBox(height: 30),
+            const SizedBox(height: 70),
             const Text(
-              'W tej rundzie musisz powiedzieć czy zdanie jest poprawnie użyte. ',
+              'Czy wyraz jest poprawnie użyty w zdaniu ?',
               textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 25),
+              style: TextStyle(fontSize: 23),
             ),
-            const SizedBox(height: 50),
-            (visability[0] == 'dontShow')
-                ? SentenceRow(
-                    sentenceNum: 0,
-                    sentence: questionData['sentence1'],
-                    onSentenceTap: onSentenceTap)
-                : (visability[0] == 'correct')
-                    ? const Text('DOBRZE, +3')
-                    : const Text(
-                        'ŹLE, to nie jest poprawne użycie tego słowa :(, tracisz 3 punkty'),
-            const SizedBox(height: 20),
-            (visability[1] == 'dontShow')
-                ? SentenceRow(
-                    sentenceNum: 1,
-                    sentence: questionData['sentence2'],
-                    onSentenceTap: onSentenceTap)
-                : (visability[1] == 'correct')
-                    ? const Text('DOBRZE, +3')
-                    : const Text(
-                        'ŹLE, to nie jest poprawne użycie tego słowa :(, tracisz 3 punkty'),
-            const SizedBox(height: 20),
-            (visability[2] == 'dontShow')
-                ? SentenceRow(
-                    sentenceNum: 2,
-                    sentence: questionData['sentence3'],
-                    onSentenceTap: onSentenceTap,
-                  )
-                : (visability[2] == 'correct')
-                    ? const Text('DOBRZE, +3')
-                    : const Text(
-                        'ŹLE, to nie jest poprawne użycie tego słowa :(, tracisz 3 punkty'),
-            const SizedBox(height: 20),
+            const SizedBox(height: 30),
+            const CustomPercentIndicator(animationDuration: 10000),
+            SizedBox(
+              height: MediaQuery.of(context).size.height / 1.6,
+              width: double.infinity,
+              child: ListView.separated(
+                separatorBuilder: (context, index) {
+                  return const SizedBox(height: 30);
+                },
+                itemCount: 3,
+                itemBuilder: (context, index) {
+                  if (visability[index] == 'dontShow') {
+                    return SentenceRow(
+                        sentenceNum: index,
+                        sentence: questionData['sentence${index + 1}'],
+                        onSentenceTap: onSentenceTap);
+                  } else {
+                    if (visability[index] == 'correct') {
+                      return ResultContainer(
+                          sentence: questionData['sentence${index + 1}'],
+                          isCorrect: true);
+                    } else {
+                      return ResultContainer(
+                        sentence: questionData['sentence${index + 1}'],
+                        isCorrect: false,
+                      );
+                    }
+                  }
+                },
+              ),
+            ),
+            // (visability[0] == 'dontShow')
+            //     ? SentenceRow(
+            //         sentenceNum: 0,
+            //         sentence: questionData['sentence1'],
+            //         onSentenceTap: onSentenceTap)
+            //     : (visability[0] == 'correct')
+            //         ? const Text('DOBRZE, +3')
+            //         : const Text(
+            //             'ŹLE, to nie jest poprawne użycie tego słowa :(, tracisz 3 punkty'),
+            // const SizedBox(height: 20),
+            // (visability[1] == 'dontShow')
+            //     ? SentenceRow(
+            //         sentenceNum: 1,
+            //         sentence: questionData['sentence2'],
+            //         onSentenceTap: onSentenceTap)
+            //     : (visability[1] == 'correct')
+            //         ? const Text('DOBRZE, +3')
+            //         : const Text(
+            //             'ŹLE, to nie jest poprawne użycie tego słowa :(, tracisz 3 punkty'),
+            // const SizedBox(height: 20),
+            // (visability[2] == 'dontShow')
+            //     ? SentenceRow(
+            //         sentenceNum: 2,
+            //         sentence: questionData['sentence3'],
+            //         onSentenceTap: onSentenceTap,
+            //       )
+            //     : (visability[2] == 'correct')
+            //         ? const Text('DOBRZE, +3')
+            //         : const Text(
+            //             'ŹLE, to nie jest poprawne użycie tego słowa :(, tracisz 3 punkty'),
+            // const SizedBox(height: 20),
           ],
         ),
       ),
@@ -138,12 +162,13 @@ class SentenceRow extends StatefulWidget {
 }
 
 class SentenceRowState extends State<SentenceRow> {
+  bool isHolding = false;
   @override
   Widget build(BuildContext context) {
     GameProvider gameProvider =
         Provider.of<GameProvider>(context, listen: false);
     String userId = gameProvider.getUserId;
-    String gameId = gameProvider.getMyGame;
+    String gameId = gameProvider.getMyGame!;
 
     int correctSentence = Provider.of<QuestionProvider>(context, listen: false)
         .getQuestionDataAsMap['correctSentence'];
@@ -152,9 +177,18 @@ class SentenceRowState extends State<SentenceRow> {
       children: [
         Container(
           decoration: BoxDecoration(
-              border: Border.all(color: buttonYellow),
-              borderRadius: const BorderRadius.all(Radius.circular(5))),
-          height: 80,
+            color: Colors.white,
+            borderRadius: const BorderRadius.all(Radius.circular(10)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                blurRadius: 5,
+                spreadRadius: 5,
+              ),
+            ],
+          ),
+          width: double.infinity,
+          height: 150,
           child: Padding(
             padding: const EdgeInsets.all(8.0),
             child: Row(

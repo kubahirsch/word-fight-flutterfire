@@ -6,6 +6,7 @@ import 'package:wordfight/screens/home_screen.dart';
 import 'package:wordfight/screens_for_single_player/question1_single_screen.dart';
 
 import '../utils/colors.dart';
+import '../widgets/custom_elevated_button.dart';
 
 class EndOfRoundSingle extends StatefulWidget {
   const EndOfRoundSingle({super.key});
@@ -26,21 +27,23 @@ class _EndOfRoundSingleState extends State<EndOfRoundSingle> {
     List<dynamic> synonyms = questionData['synonyms'];
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Koniec'),
-        centerTitle: true,
-      ),
+      appBar: AppBar(),
       body: Center(
         child: Column(
           children: [
-            Text('Za ten wyraz zdobyłeś $points punktów'),
-            const SizedBox(height: 70),
+            Text(
+              'Wynik: $points pkt.',
+              style: const TextStyle(fontSize: 30),
+            ),
+            const SizedBox(height: 30),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              padding: const EdgeInsets.symmetric(horizontal: 50.0),
               child: Container(
+                  width: double.infinity,
+                  height: 500,
                   padding: const EdgeInsets.all(20),
                   decoration: BoxDecoration(
-                    border: Border.all(width: 2, color: buttonYellow),
+                    border: Border.all(width: 2, color: Colors.black),
                     borderRadius: const BorderRadius.all(Radius.circular(10)),
                   ),
                   child: Column(
@@ -49,21 +52,24 @@ class _EndOfRoundSingleState extends State<EndOfRoundSingle> {
                       Text(
                         word,
                         style: const TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
+                            fontSize: 33, fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 10),
                       Text(
                         meaning,
-                        style: const TextStyle(fontStyle: FontStyle.italic),
+                        style: const TextStyle(
+                            fontStyle: FontStyle.italic, fontSize: 20),
                       ),
-                      const SizedBox(height: 20),
+                      const SizedBox(height: 16),
                       const Text(
                         'Synonimy: ',
-                        style: TextStyle(fontSize: 15),
+                        style: TextStyle(fontSize: 20),
                       ),
                       Text(synonyms.join(", ")),
-                      const SizedBox(height: 30),
-                      ElevatedButton(
+                      SizedBox(height: 10),
+                      const Spacer(),
+                      CustomElevatedButton(
+                        isLoading: false,
                         onPressed: () {
                           Navigator.of(context).pushReplacement(
                             MaterialPageRoute(
@@ -71,18 +77,15 @@ class _EndOfRoundSingleState extends State<EndOfRoundSingle> {
                             ),
                           );
                         },
-                        child: const Text('Następny wyraz'),
+                        text: 'Następny wyraz',
                       ),
-                      const SizedBox(height: 30),
-                      ElevatedButton(
+                      const SizedBox(height: 20),
+                      CustomElevatedButton(
+                        isLoading: false,
                         onPressed: () {
-                          Navigator.of(context).pushReplacement(
-                            MaterialPageRoute(
-                              builder: (context) => const HomeScreen(),
-                            ),
-                          );
+                          Navigator.of(context).pop();
                         },
-                        child: const Text('Koniec gry'),
+                        text: 'Koniec gry',
                       ),
                     ],
                   )),
